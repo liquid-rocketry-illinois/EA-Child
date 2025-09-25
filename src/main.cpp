@@ -23,6 +23,13 @@
 #include <SPI.h>
 #include <SD.h>
 
+
+// These are the four libraries for the four utilized sensors
+#include <Adafruit_BNO08x.h>
+#include <ICM42688.h>
+#include <MS5611.h>
+#include <SensirionI2cSht4x.h>
+
 const int chipSelect = BUILTIN_SDCARD;
 
 void setup() {
