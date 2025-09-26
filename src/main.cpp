@@ -30,7 +30,14 @@
 #include <MS5611.h>
 #include <SensirionI2cSht4x.h>
 
+// SD CARD STUFF
 const int chipSelect = BUILTIN_SDCARD;
+
+
+// BNO08x STUFF
+#define BNO08X_CS 10
+#define BNO08X_INT 9
+
 
 void setup() {
   // Open serial communications and wait for port to open:
