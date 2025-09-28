@@ -26,7 +26,7 @@
 
 // These are the four libraries for the four utilized sensors
 #include <Adafruit_BNO08x.h>
-#include <ICM42688.h>
+
 #include <MS5611.h>
 #include <SensirionI2cSht4x.h>
 
@@ -87,3 +87,4 @@ void loop() {
     Serial.println("error opening datalog.txt");
   }
 }
+ 
