@@ -14,7 +14,8 @@ GNCData::~GNCData() {
 }
 
 void IMUSensors::Init(){
-    Wire.begin();
+    if (!Wire.available()) Wire.begin();
+    delay(100);
     SecondaryIMU.begin();
     MainIMU.begin_I2C(); // or begin_SPI depending on your wiring
 }
