@@ -23,22 +23,29 @@
 // These are the four libraries for the four utilized sensors
 #include <MS5611.h>
 #include <SensirionI2cSht4x.h>
-#include "SDCard.h"
 
-SDCard DataCard = SDCard();
+#include "SDCard.h"
+#include "Sensors\Sensors.h"
+
+SDCard* DataCard; 
+Sensors* sensors;
 
 void setup() {
-    // Open serial communications and wait for port to open:
-    Serial.begin(9600);
+    Serial.begin(115200);
     while (!Serial) {
-      ; // wait for serial port to connect. Needed for native USB port only
+        ; // wait for serial port to connect
     }
 
-    
-    
+    // Now construct the objects
+    DataCard = new SDCard();
+    sensors  = new Sensors();
+
+    DataCard->SDWrite("SD Initialization.");
+    if (!sensors->InitSensors()) Serial.println("One or multiple sensors failed!");
+    else Serial.println("All sensors initialized");
 }
 
 void loop() {
-
-    //DataCard.SDWrite(); // FILL IN WITH SENSORS' DATA
+    sensors->Update();
+    //DataCard->SDWrite(); // FILL IN WITH SENSORS' DATA
 }

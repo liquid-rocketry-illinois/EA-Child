@@ -2,8 +2,9 @@
 
 #include "IMU_Sensors.h"
 
-namespace Sensors{
+struct Sensors{
     IMUSensors IMUs;
 
-    void InitSensors();
+    bool InitSensors();
+    void Update();
 };
