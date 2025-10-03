@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <Adafruit_BNO08x.h>
+#include <SparkFun_BNO08x_Arduino_Library.h>
 #include "Vector3D.h"
 
 // Simple header implementing neccessary quaternion calculations

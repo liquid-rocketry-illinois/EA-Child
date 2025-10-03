@@ -1,6 +1,6 @@
 #include "IMU_Sensors.h"
 
-GNCData::GNCData(ICM42688* secIMU, Adafruit_BNO08x* mainIMU)
+GNCData::GNCData(ICM42688* secIMU, BNO08x* mainIMU)
     : Secondary(secIMU), Main(mainIMU){
         pyr->setX(0);
         pyr->setY(0);
@@ -23,16 +23,23 @@ GNCData::~GNCData() {
     delete U;
 }
 
-void IMUSensors::setReports(sh2_SensorId_t reportType, long report_interval) {
+void IMUSensors::setReports() {
   Serial.println("Setting desired reports");
-  if (! MainIMU.enableReport(reportType, (uint32_t)report_interval)) {
-    Serial.println("Could not enable stabilized remote vector");
+  if (MainIMU.enableRotationVector() == true) {
+    Serial.println(F("Rotation vector enabled"));
+    Serial.println(F("Output in form roll, pitch, yaw"));
+  } else {
+    Serial.println("Could not enable rotation vector");
   }
 }
 
 void IMUSensors::Init(){
-    if (!Wire.available()) Wire.begin();
-    delay(100);
+    pinMode(MAIN_IMU_PS0, OUTPUT);
+    pinMode(MAIN_IMU_PS1, OUTPUT);
+
+    digitalWrite(MAIN_IMU_PS0, HIGH);
+    digitalWrite(MAIN_IMU_PS1, HIGH);
+
     if (!SecondaryIMU.begin()){
         Serial.println("Failed to find ICM42688 chip");
     }
@@ -40,17 +47,19 @@ void IMUSensors::Init(){
         Serial.println("ICM42688 Found!");
         SecStatus = true;
     }
-    if (!MainIMU.begin_SPI(MAIN_IMU_CS, MAIN_IMU_INT, &SPI, 0x01)) { // SENSOR ID = 0x01; decimal 1
+    if (!MainIMU.beginSPI(MAIN_IMU_CS, MAIN_IMU_INT, MAIN_IMU_RST, 1000000, SPI)) {
         Serial.println("Failed to find BNO08x chip");
+        digitalWrite(MAIN_IMU_PS0, LOW);
+        digitalWrite(MAIN_IMU_PS1, LOW);
     }
     else{
         Serial.println("BNO08x Found!");
         MainStatus = true;
+        digitalWrite(MAIN_IMU_PS0, LOW);
     } 
-
     
 // BNO (Main):
-    setReports(reportType, reportIntervalUs);
+    setReports();
 
 // ICM (Secondary):
     // setting the accelerometer full scale range to +/-8G
@@ -65,49 +74,40 @@ void IMUSensors::Init(){
 
 void IMUSensors::Update(){
     if (MainIMU.wasReset()) {
-    Serial.print("sensor was reset "); // COMMENT OUT WHEN DONE
-    IMUSensors::setReports(reportType, reportIntervalUs);
+        Serial.print("sensor was reset "); // COMMENT OUT WHEN DONE
+        setReports();
     }
 
     // -------- MAIN ----------
-  
-    if (MainIMU.getSensorEvent(&sensorValue)) {
-        // in this demo only one report type will be received depending on FAST_MODE define (above)
-        switch (sensorValue.sensorId) {
-        case SH2_ARVR_STABILIZED_RV: // This is used rn
-            QuatMath::quaternionToEulerRV(&sensorValue.un.arvrStabilizedRV, Data.pyr, true);
-        case SH2_GYRO_INTEGRATED_RV:
-            // faster (more noise?)
-            QuatMath::quaternionToEulerGI(&sensorValue.un.gyroIntegratedRV, Data.pyr, true);
-            break;
-        }
-        static long last = 0;
-        long now = micros();
-        Serial.print(now - last);             Serial.print("\t"); // COMMENT OUT WHEN DONE
-        last = now;
+    if (MainIMU.getSensorEvent()) {
+        // is it the correct sensor data we want?
+        if (MainIMU.getSensorEventID() == SENSOR_REPORTID_ROTATION_VECTOR) {
 
-        // COMMENT OUT WHEN DONE
-        Serial.print(sensorValue.status);     Serial.print("\t");  // This is accuracy in the range of 0 to 3
-        Serial.print(Data.pyr->getX());                Serial.print("\t");
-        Serial.print(Data.pyr->getY());              Serial.print("\t");
-        Serial.println(Data.pyr->getZ());
+            Data.pyr->setX((MainIMU.getYaw()) * 180.0 / PI);
+            Data.pyr->setY((MainIMU.getPitch()) * 180.0 / PI);
+            Data.pyr->setZ((MainIMU.getRoll()) * 180.0 / PI);
+
+            Serial.print(Data.pyr->getX());              Serial.print("\t");
+            Serial.print(Data.pyr->getY());              Serial.print("\t");
+            Serial.println(Data.pyr->getZ());
+        }
     }
 
     // -------- SECONDARY ---------
 
     SecondaryIMU.readSensor();
     
-    Serial.print(SecondaryIMU.getAccelX_mss(),6);
+    Serial.print(SecondaryIMU.getAccelX_mss(),3);
     Serial.print("\t");
-    Serial.print(SecondaryIMU.getAccelY_mss(),6);
+    Serial.print(SecondaryIMU.getAccelY_mss(),3);
     Serial.print("\t");
-    Serial.print(SecondaryIMU.getAccelZ_mss(),6);
+    Serial.print(SecondaryIMU.getAccelZ_mss(),3);
     Serial.print("\t");
-    Serial.print(SecondaryIMU.getGyroX_rads(),6);
+    Serial.print(SecondaryIMU.getGyroX_rads(),3);
     Serial.print("\t");
-    Serial.print(SecondaryIMU.getGyroY_rads(),6);
+    Serial.print(SecondaryIMU.getGyroY_rads(),3);
     Serial.print("\t");
-    Serial.print(SecondaryIMU.getGyroZ_rads(),6);
+    Serial.print(SecondaryIMU.getGyroZ_rads(),3);
     Serial.print("\t");
-    Serial.println(SecondaryIMU.getTemperature_C(),6);
+    Serial.println(SecondaryIMU.getTemperature_C(),2);
 }
