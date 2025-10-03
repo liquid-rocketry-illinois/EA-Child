@@ -33,7 +33,7 @@ Sensors* sensors;
 void setup() {
     Serial.begin(115200);
     while (!Serial) {
-        ; // wait for serial port to connect
+        ; // wait for serial port to connect. remove line when testing
     }
 
     if (!Wire.available()) Wire.begin();
@@ -47,9 +47,22 @@ void setup() {
     DataCard->SDWrite("SD Initialization.");
     if (!sensors->InitSensors()) Serial.println("One or multiple sensors failed!");
     else Serial.println("All sensors initialized");
+
+
+    pinMode(31, OUTPUT); // PYRO ONE
+    pinMode(32, OUTPUT); // PYRO TWO
 }
 
 void loop() {
-    sensors->Update();
+    //sensors->Update();
     //DataCard->SDWrite(); // FILL IN WITH SENSORS' DATA
+    delay(20000);
+    Serial.println("ON!");
+    digitalWrite(31, LOW);
+    digitalWrite(32, LOW);
+    delay(15000);
+    Serial.println("OFF!");
+    digitalWrite(31, HIGH);
+    digitalWrite(32, LOW);
+    while(1){;;}
 }

@@ -25,6 +25,12 @@ private:
     double vX;
     double vY;
     double vZ;
+    double pdt;
+    double ydt;
+    double rdt;
+    double pdtt;
+    double ydtt;
+    double rdtt;
 
     // Just pointers, no allocation here
     ICM42688* Secondary;
@@ -32,6 +38,8 @@ private:
 
 public:
     Vector3D* pyr = new Vector3D(pitch, yaw, roll);
+    Vector3D* pyrdt = new Vector3D(pdt, ydt, rdt);
+    Vector3D* pyrdtt = new Vector3D(pdtt, ydtt, rdtt);
     Vector3D* U   = new Vector3D(vX, vY, vZ);
 
     GNCData(ICM42688* secIMU, BNO08x* mainIMU);
