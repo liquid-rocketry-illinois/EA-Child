@@ -30,22 +30,34 @@ void MSSensors::init()
     MSstatus = true;
     Data.setBarometer(&MSSensor);
   }
-  Serial.println();
+  Serial.println("MS5611 initialised.");
 }
 
-String MSSensors::update(){
+SensorReading MSSensors::update(){
   return Data.update();
 }
 
 /**
- * Update returns a CSV string in the form temperature, pressure, altitude.
+ * SensorData returns a SensorReading struct with temperature, pressure and altitude. 
  */
-String SensorData::update(){
+SensorReading SensorData::update(){
   barometer -> read();
-  String temperature = String(barometer->getTemperature());
-  String pressure = String(barometer->getPressure());
-  String altitude = String(barometer->getAltitude());
-  return temperature + "," + pressure + "," + altitude;
+  SensorReading reading{};
+  
+  if(!barometer){
+    reading.temperature = NAN;
+    reading.pressure = NAN;
+    reading.altitude = NAN;
+    return reading;
+  }
+
+  barometer -> read();
+
+  reading.temperature = barometer -> getTemperature();
+  reading.pressure = barometer -> getPressure();
+  reading.altitude = barometer -> getAltitude();
+
+  return reading;
 }
 
 

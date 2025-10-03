@@ -2,15 +2,15 @@
 
 #include "MS5611.h"
 
-#define MS5611_SCL_PIN 24
-#define MS5611_SDA_PIN 25
+struct SensorReading{
+    double pressure;
+    double temperature;
+    double altitude;
+};
+
 
 class SensorData{
     private:
-        double pressure;
-        double temperature;
-        double altitude;
-
         // Pointer to barometer
         MS5611* barometer = nullptr;
 
@@ -20,7 +20,7 @@ class SensorData{
         }
         
         // Returns CSV: temperature,pressure,altitude
-        String update();
+        SensorReading update();
 };
 
 
@@ -29,7 +29,7 @@ struct MSSensors{
     bool MSstatus = false;
     SensorData Data;
 
-    String update();
+    SensorReading update();
     void init();
 };
 
