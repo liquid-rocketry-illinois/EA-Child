@@ -36,6 +36,10 @@ void setup() {
         ; // wait for serial port to connect
     }
 
+    if (!Wire.available()) Wire.begin();
+    if (!Wire1.available()) Wire1.begin();
+    if (!Wire2.available()) Wire2.begin();
+
     // Now construct the objects
     DataCard = new SDCard();
     sensors  = new Sensors();
