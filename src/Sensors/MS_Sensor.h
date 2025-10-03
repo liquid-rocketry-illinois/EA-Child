@@ -12,21 +12,24 @@ class SensorData{
         double altitude;
 
         // Pointer to barometer
-        MS5611* barometer;
+        MS5611* barometer = nullptr;
 
     public: 
+        void setBarometer(MS5611* b){
+            barometer = b;
+        }
+        
+        // Returns CSV: temperature,pressure,altitude
         String update();
 };
 
 
 struct MSSensors{
-    //Declares the address (or something)
-    MS5611 MSSensor = MS5611(MS5611_SDA_PIN); 
-    bool MSstatus;
+    MS5611 MSSensor = MS5611(0x77); // Default address
+    bool MSstatus = false;
     SensorData Data;
 
     String update();
     void init();
-
 };
 

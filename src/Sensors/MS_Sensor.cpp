@@ -1,8 +1,6 @@
 #include "MS5611.h"
 #include "MS_Sensor.h"
-
-
-MS5611 ms5611(0x77);
+#include <Wire.h>
 
 void MSSensors::init()
 {
@@ -15,29 +13,38 @@ void MSSensors::init()
   Serial.println();
 
   Wire.begin();
-  if (ms5611.begin())
+
+  if (MSSensor.begin())
   {
     Serial.print("MS5611 found: ");
-    Serial.println(ms5611.getAddress());
+    Serial.println(MSSensor.getAddress());
     MSstatus = true;
-  }
-  else
-  {
-    while(!ms5611.begin()){ 
+    // Hook SensorData to sensor
+    Data.setBarometer(&MSSensor);
+  }else{
+    // Keep retrying
+    while(!MSSensor.begin()){ 
       Serial.println("MS5611 not found. Check connections.");
+      delay(2000);
     }
+    MSstatus = true;
+    Data.setBarometer(&MSSensor);
   }
   Serial.println();
 }
 
+String MSSensors::update(){
+  return Data.update();
+}
+
 /**
- * SensorData returns a CSV string in the form temperature, pressure, altitude.
+ * Update returns a CSV string in the form temperature, pressure, altitude.
  */
 String SensorData::update(){
-  ms5611.read();
-  String temperature = String(ms5611.getTemperature());
-  String pressure = String(ms5611.getPressure());
-  String altitude = String(ms5611.getAltitude());
+  barometer -> read();
+  String temperature = String(barometer->getTemperature());
+  String pressure = String(barometer->getPressure());
+  String altitude = String(barometer->getAltitude());
   return temperature + "," + pressure + "," + altitude;
 }
 
