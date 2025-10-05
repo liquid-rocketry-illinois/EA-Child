@@ -97,7 +97,6 @@ void IMUSensors::Update(){
             double prevRoll = Data.pyr->getZ();
             if (Data.pyr->getX() != 0.0 && Data.pyr->getY() != 0.0 && Data.pyr->getZ() != 0.0) previous = millis();
 
-            uint32_t dt = millis() - previous;
             Data.pyrdt->setX(MainIMU.getGyroX());
             Data.pyrdt->setY(MainIMU.getGyroY());
             Data.pyrdt->setZ(MainIMU.getGyroZ());
