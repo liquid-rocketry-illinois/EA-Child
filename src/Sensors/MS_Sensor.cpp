@@ -1,6 +1,3 @@
-#define Wire Wire2   // Trick library to use Wire2 instead of Wire
-#include "MS5611.h"
-#undef Wire
 #include "MS_Sensor.h"
 #include <Wire.h>
 
@@ -9,7 +6,6 @@
  * 
  */
 void MSSensors::init(){
-  Serial.begin(115200);
   while (!Serial);
   Serial.println();
   Serial.println(__FILE__);
@@ -18,19 +14,23 @@ void MSSensors::init(){
   Serial.println();
 
   Wire2.begin();
+  Wire2.setClock(100000);
 
-  if (MSSensor.begin())
-  {
+  delay(20);  
+
+  if (MSSensor.begin()){
     Serial.print("MS5611 found: ");
     Serial.println(MSSensor.getAddress());
     MSstatus = true;
+    MSSensor.setOversampling(OSR_ULTRA_HIGH);
+
     // Hook SensorData to sensor
     Data.setBarometer(&MSSensor);
   }else{
     // Keep retrying
     while(!MSSensor.begin()){ 
       Serial.println("MS5611 not found. Check connections.");
-      delay(2000);
+      delay(1000);
     }
     MSstatus = true;
     Data.setBarometer(&MSSensor);
@@ -71,10 +71,22 @@ SensorReading SensorData::update(){
     return reading;
   }
 
-  barometer -> read();
-  reading.temperature = barometer -> getTemperature();
+  barometer -> read(0);
+  delay(10);
+  float temp = barometer -> getTemperature();
+
+  barometer -> read(0);
+  delay(10);
+  float pres = barometer -> getPressure();
+
+  // Local calibration because the MS sensor is a piece of s
+  const float localSeaLevelPressure = 1018.6257;
+  float pressureOffset = localSeaLevelPressure - pres;
+  barometer -> setPressureOffset(pressureOffset);
+  
+  reading.temperature = temp;
   reading.pressure = barometer -> getPressure();
-  reading.altitude = barometer -> getAltitude();
+  reading.altitude = barometer -> getAltitude(localSeaLevelPressure);
 
   return reading;
 }

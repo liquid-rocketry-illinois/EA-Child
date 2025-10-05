@@ -2,6 +2,10 @@
 
 bool Sensors::InitSensors(){
     Sensors::IMUs.Init();
+    // Debug printlns
+    Serial.print("Intializing MS sensor");
+    Serial.print(Sensors::MSSensor.MSstatus);
+    
     Sensors::MSSensor.init();
     // Add init functions for other sensors
 
