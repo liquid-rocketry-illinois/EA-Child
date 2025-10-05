@@ -48,14 +48,20 @@ void setup() {
     if (!sensors->InitSensors()) Serial.println("One or multiple sensors failed!");
     else Serial.println("All sensors initialized");
 
-
+    // All pins default to an INPUT designation
     pinMode(31, OUTPUT); // PYRO ONE
     pinMode(32, OUTPUT); // PYRO TWO
+    digitalWrite(31, LOW);
+    digitalWrite(32, LOW); //Initialize as low signal to represent 'off'. In case the write value isn't already low (this shouldn't happen though)
 }
 
 void loop() {
-    //sensors->Update();
+    sensors->Update();
     //DataCard->SDWrite(); // FILL IN WITH SENSORS' DATA
+
+    /*
+    //EJECTION TEST
+    Serial.println("BEGIN EJECTION TEST.");
     delay(20000);
     Serial.println("ON!");
     digitalWrite(31, LOW);
@@ -63,6 +69,7 @@ void loop() {
     delay(15000);
     Serial.println("OFF!");
     digitalWrite(31, HIGH);
-    digitalWrite(32, LOW);
+    digitalWrite(32, HIGH);
     while(1){;;}
+    */
 }
