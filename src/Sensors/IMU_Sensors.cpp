@@ -65,8 +65,10 @@ void IMUSensors::Init(){
     else{
         Serial.println("BNO08x Found!");
         MainStatus = true;
+
         MainIMU.clearTare();
         MainIMU.tareNow();
+
         MainIMU.enableAccelerometer();
         MainIMU.enableMagnetometer();
         MainIMU.enableGyro();
@@ -82,7 +84,20 @@ void IMUSensors::Update(){
         //Serial.print("sensor was reset "); // COMMENT OUT WHEN DONE
         setReports();
     }
-    uint32_t previous = 0;
+/*
+    static bool Calibrated = false;
+    static const uint16_t first_millis = (uint16_t)millis();
+
+    if (((millis() - first_millis) > 2000) && (Calibrated == false)){
+        MainIMU.tareNow();
+        if (MainIMU.clearTare()) {
+            delayMicroseconds(100000);
+            MainIMU.tareNow();
+            MainIMU.saveTare();
+        }
+        Calibrated = true;
+    }
+*/
 
     // -------- MAIN ----------
     if (MainIMU.getSensorEvent()) {
@@ -91,31 +106,60 @@ void IMUSensors::Update(){
             Data.pyr->setX((MainIMU.getPitch()) * 180.0 / PI);
             Data.pyr->setY((MainIMU.getYaw()) * 180.0 / PI);
             Data.pyr->setZ((MainIMU.getRoll()) * 180.0 / PI);
-            
-            double prevPitch = Data.pyr->getX();
-            double prevYaw = Data.pyr->getY();
-            double prevRoll = Data.pyr->getZ();
-            if (Data.pyr->getX() != 0.0 && Data.pyr->getY() != 0.0 && Data.pyr->getZ() != 0.0) previous = millis();
 
-            Data.pyrdt->setX(MainIMU.getGyroX());
-            Data.pyrdt->setY(MainIMU.getGyroY());
-            Data.pyrdt->setZ(MainIMU.getGyroZ());
+            Data.omega->setX(MainIMU.getGyroX());
+            Data.omega->setY(MainIMU.getGyroY());
+            Data.omega->setZ(MainIMU.getGyroZ());
 
-            Serial.print(Data.pyr->getX());              Serial.print("\t");
-            Serial.print(Data.pyr->getY());              Serial.print("\t");
-            Serial.print(Data.pyr->getZ());              Serial.print("\t");Serial.print("\t");
+            static Vector3D prevOmega(0,0,0);
+            static unsigned long prevMicros = micros();
+            unsigned long currMicros = micros();
+            float dt = (currMicros - prevMicros) / 1.0e6; // convert µs to seconds
+            if (dt > 0) {
+                Data.alpha->setX((Data.omega->getX() - prevOmega.getX()) / dt);
+                Data.alpha->setY((Data.omega->getY() - prevOmega.getY()) / dt);
+                Data.alpha->setZ((Data.omega->getZ() - prevOmega.getZ()) / dt);
+            }
+            prevOmega = *Data.omega;
+            prevMicros = currMicros;
 
-            // NEED THIS TO BE VELOCITY BUT IT ISN'T :(
-            Serial.print(Data.pyrdt->getX());              Serial.print("\t");
-            Serial.print(Data.pyrdt->getY());              Serial.print("\t");
-            Serial.println(Data.pyrdt->getZ());
+            Data.A->setX(MainIMU.getAccelX());
+            Data.A->setY(MainIMU.getAccelY());
+            Data.A->setZ(MainIMU.getAccelZ());
+
+            Data.Magnet->setX(MainIMU.getMagX());
+            Data.Magnet->setY(MainIMU.getMagY());
+            Data.Magnet->setZ(MainIMU.getMagZ());
+
+            Serial.print(millis());                         Serial.print(" ");Serial.print(" . ");
+
+            Serial.print(Data.Magnet->getX());              Serial.print(" ");
+            Serial.print(Data.Magnet->getY());              Serial.print(" ");
+            Serial.print(Data.Magnet->getZ());              Serial.print(" ");Serial.print(" . ");
+
+            Serial.print(Data.pyr->getX());              Serial.print(" ");
+            Serial.print(Data.pyr->getY());              Serial.print(" ");
+            Serial.print(Data.pyr->getZ());              Serial.print(" ");Serial.print(" . ");
+
+            Serial.print(Data.A->getX());              Serial.print(" ");
+            Serial.print(Data.A->getY());              Serial.print(" ");
+            Serial.print(Data.A->getZ());              Serial.print(" ");Serial.print(" . ");
+
+            Serial.print(Data.omega->getX());              Serial.print(" ");
+            Serial.print(Data.omega->getY());              Serial.print(" ");
+            Serial.print(Data.omega->getZ());              Serial.print(" ");Serial.print(" . ");
+
+            Serial.print(Data.alpha->getX());              Serial.print(" ");
+            Serial.print(Data.alpha->getY());              Serial.print(" ");
+            Serial.print(Data.alpha->getZ());              Serial.print(" ");Serial.print(" . ");
+            Serial.println(millis());
             //Serial.println("Data printed for BNO.");
         }
     }
     else Serial.println("Sensor data incorrect!");
 
     // -------- SECONDARY ---------
-
+/*
     if (SecondaryIMU.readSensor() == 1){
         Serial.print(SecondaryIMU.getAccelX_mss(),3);
         Serial.print("\t");
@@ -131,5 +175,6 @@ void IMUSensors::Update(){
         Serial.print("\t");
         Serial.println(SecondaryIMU.getTemperature_C(),2);
     }
-    //else Serial.println("Secondary IMU Data Fail!");
+    else Serial.println("Secondary IMU Data Fail!");
+    */
 }

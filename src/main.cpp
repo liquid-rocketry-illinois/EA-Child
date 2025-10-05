@@ -27,6 +27,8 @@
 #include "SDCard.h"
 #include "Sensors\Sensors.h"
 
+#define DATA_WRITE_FREQUENCY 100 // Hertz
+
 SDCard* DataCard; 
 Sensors* sensors;
 
@@ -56,20 +58,47 @@ void setup() {
 }
 
 void loop() {
-    sensors->Update();
-    //DataCard->SDWrite(); // FILL IN WITH SENSORS' DATA
+    static unsigned long nextUpdateMicros = micros();
+    const unsigned long interval = 1000000 / DATA_WRITE_FREQUENCY;
+
+    unsigned long now = micros();
+    if ((long)(now - nextUpdateMicros) >= 0) {
+        nextUpdateMicros += interval;  // lock to 100 Hz schedule
+
+        // ---- Sensor + Logging ----
+        sensors->Update();
+        //DataCard->SDWrite(); // FILL IN WITH SENSORS' DATA
+/*
+        // ---- Frequency Monitor ----
+        static unsigned long lastFreqPrint = millis();
+        static unsigned int loopCount = 0;
+        loopCount++;
+
+        if (millis() - lastFreqPrint >= 1000) {
+            float measuredHz = loopCount * 1000.0 / (millis() - lastFreqPrint);
+
+            Serial.print("Target: 10 Hz, Measured: ");
+            Serial.print(measuredHz, 2);
+            Serial.println(" Hz");
+
+            loopCount = 0;
+            lastFreqPrint = millis();
+        }
+
+        // ---- Catch-up handling ----
+        // If we're very late, resync nextUpdateMicros to 'now'
+        if ((long)(now - nextUpdateMicros) > (long)interval) {
+            nextUpdateMicros = now + interval;
+            Serial.println("Loop lagged! Resyncing schedule.");
+        }
+*/
+    } else {
+        // sleep until the next update window
+        delayMicroseconds((unsigned long)(nextUpdateMicros - now));
+    }
 
     /*
     //EJECTION TEST
     Serial.println("BEGIN EJECTION TEST.");
-    delay(20000);
-    Serial.println("ON!");
-    digitalWrite(31, LOW);
-    digitalWrite(32, LOW);
-    delay(15000);
-    Serial.println("OFF!");
-    digitalWrite(31, HIGH);
-    digitalWrite(32, HIGH);
-    while(1){;;}
     */
 }
