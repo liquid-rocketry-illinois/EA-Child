@@ -57,6 +57,7 @@ void setup() {
 
 void loop() {
     sensors->Update();
+    
     //DataCard->SDWrite(); // FILL IN WITH SENSORS' DATA
 
     /*

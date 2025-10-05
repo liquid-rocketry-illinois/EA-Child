@@ -1,9 +1,14 @@
+#define Wire Wire2   // Trick library to use Wire2 instead of Wire
 #include "MS5611.h"
+#undef Wire
 #include "MS_Sensor.h"
 #include <Wire.h>
 
-void MSSensors::init()
-{
+/**
+ * init will attempt to initialize the MS sensor with I2C.
+ * 
+ */
+void MSSensors::init(){
   Serial.begin(115200);
   while (!Serial);
   Serial.println();
@@ -12,7 +17,7 @@ void MSSensors::init()
   Serial.println(MS5611_LIB_VERSION); 
   Serial.println();
 
-  Wire.begin();
+  Wire2.begin();
 
   if (MSSensor.begin())
   {
@@ -33,18 +38,33 @@ void MSSensors::init()
   Serial.println("MS5611 initialised.");
 }
 
+/**
+ * update returns a SensorReading struct with .temperature, .pressure
+ * and .altitude. 
+ * 
+ */
 SensorReading MSSensors::update(){
-  return Data.update();
+  SensorReading r = Data.update();
+  if(MSstatus){
+    Serial.print("Temp: ");                   
+    Serial.print(r.temperature);              
+    Serial.print(" °C, Pressure: ");
+    Serial.print(r.pressure); 
+    Serial.print(" mbar, Altitude: ");
+    Serial.print(r.altitude);
+    Serial.println(" m");
+  }
+  return r;
 }
 
 /**
  * SensorData returns a SensorReading struct with temperature, pressure and altitude. 
  */
 SensorReading SensorData::update(){
-  barometer -> read();
   SensorReading reading{};
   
-  if(!barometer){
+  // To avoid hitting a nullptr
+   if(!barometer){
     reading.temperature = NAN;
     reading.pressure = NAN;
     reading.altitude = NAN;
@@ -52,7 +72,6 @@ SensorReading SensorData::update(){
   }
 
   barometer -> read();
-
   reading.temperature = barometer -> getTemperature();
   reading.pressure = barometer -> getPressure();
   reading.altitude = barometer -> getAltitude();
