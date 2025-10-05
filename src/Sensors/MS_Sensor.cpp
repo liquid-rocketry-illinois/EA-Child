@@ -74,19 +74,18 @@ SensorReading SensorData::update(){
   barometer -> read(0);
   delay(10);
   float temp = barometer -> getTemperature();
-
-  barometer -> read(0);
-  delay(10);
   float pres = barometer -> getPressure();
 
-  // Local calibration because the MS sensor is a piece of s
-  const float localSeaLevelPressure = 1018.6257;
-  float pressureOffset = localSeaLevelPressure - pres;
-  barometer -> setPressureOffset(pressureOffset);
+  const float calibrationOffset = 27.7;
+  float calibratedPressure = pres + calibrationOffset;
   
   reading.temperature = temp;
-  reading.pressure = barometer -> getPressure();
-  reading.altitude = barometer -> getAltitude(localSeaLevelPressure);
+  reading.pressure = calibratedPressure;
+  //reading.altitude = barometer -> getAltitude();
+
+  // Manually calc the altitude because the formula is going wild
+  float pressureRatio = pres / 1013.25;
+  reading.altitude = 44307.69396 * (1 - pow(pressureRatio, 0.190284));
 
   return reading;
 }
