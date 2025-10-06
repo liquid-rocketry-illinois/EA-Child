@@ -84,7 +84,7 @@ SensorReading SensorData::update(){
   //reading.altitude = barometer -> getAltitude();
 
   // Manually calc the altitude because the formula is going wild
-  float pressureRatio = pres / 1013.25;
+  float pressureRatio = calibratedPressure / 1013.25;
   reading.altitude = 44307.69396 * (1 - pow(pressureRatio, 0.190284));
 
   return reading;
