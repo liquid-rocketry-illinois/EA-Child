@@ -5,6 +5,8 @@
 
 struct Sensors{
     IMUSensors IMUs;
+    MSSensors MSSensor;
+
 
     bool InitSensors();
     String Update();

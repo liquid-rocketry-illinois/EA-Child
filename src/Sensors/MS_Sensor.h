@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MS5611.h"
+#include <Wire.h>
 
 struct SensorReading{
     double pressure;
@@ -19,13 +20,12 @@ class SensorData{
             barometer = b;
         }
         
-        // Returns CSV: temperature,pressure,altitude
+        // Returns struct with relevant information
         SensorReading update();
 };
 
-
 struct MSSensors{
-    MS5611 MSSensor = MS5611(0x77); // Default address
+    MS5611 MSSensor = MS5611(0x77, &Wire2); // Explicitly use wire2
     bool MSstatus = false;
     SensorData Data;
 

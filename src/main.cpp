@@ -66,6 +66,9 @@ void loop() {
     static unsigned long nextUpdateMicros = micros();
     const unsigned long interval = 1000000 / DATA_WRITE_FREQUENCY;
     int loops = 0;
+    sensors->Update();
+    
+    //DataCard->SDWrite(); // FILL IN WITH SENSORS' DATA
 
     unsigned long now = micros();
     if ((long)(now - nextUpdateMicros) >= 0) {
