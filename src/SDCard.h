@@ -7,15 +7,19 @@ const int chipSelect = BUILTIN_SDCARD;
 
 class SDCard{
     public:
-    SDCard(){
+    SDCard(){};
+
+    bool init(){
         Serial.print("Initializing SD card...");
 
         // see if the card is present and can be initialized:
         if (!SD.begin(chipSelect)) {
             Serial.println("Card failed, or not present");
+            return false;
         }
-        Serial.println("card initialized.");
-    };
+        else Serial.println("card initialized.");
+        return true;
+    }
 
     void SDWrite(String dataString){
         File dataFile = SD.open("datalog.txt", FILE_WRITE);

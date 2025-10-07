@@ -26,11 +26,13 @@
 
 #include "SDCard.h"
 #include "Sensors\Sensors.h"
+#include "Controls\Motors.h"
 
 #define DATA_WRITE_FREQUENCY 100 // Hertz
 
 SDCard* DataCard; 
 Sensors* sensors;
+Servos* motors;
 
 void setup() {
     Serial.begin(115200);
@@ -45,10 +47,13 @@ void setup() {
     // Now construct the objects
     DataCard = new SDCard();
     sensors  = new Sensors();
+    motors = new Servos;
 
+    DataCard->init();
     DataCard->SDWrite("SD Initialization.");
     if (!sensors->InitSensors()) Serial.println("One or multiple sensors failed!");
     else Serial.println("All sensors initialized");
+    motors->init();
 
     // All pins default to an INPUT designation
     pinMode(31, OUTPUT); // PYRO ONE
@@ -67,6 +72,8 @@ void loop() {
 
         // ---- Sensor + Logging ----
         sensors->Update();
+        motors->testMotors();
+        while(1){;} // Stop loop
         //DataCard->SDWrite(); // FILL IN WITH SENSORS' DATA
 /*
         // ---- Frequency Monitor ----
@@ -96,9 +103,4 @@ void loop() {
         // sleep until the next update window
         delayMicroseconds((unsigned long)(nextUpdateMicros - now));
     }
-
-    /*
-    //EJECTION TEST
-    Serial.println("BEGIN EJECTION TEST.");
-    */
 }
