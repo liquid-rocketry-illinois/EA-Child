@@ -50,9 +50,9 @@ bool Servos::init(){
 }
 
 bool Servos::testMotors(){
-    MotorA.setState(Vector3D(20, 0, 0));
-    MotorB.setState(Vector3D(20, 0, 0));
-    MotorC.setState(Vector3D(20, 0, 0));
-    MotorD.setState(Vector3D(20, 0, 0));
+    MotorA.setState(Vector3D(-20, 0, 0));
+    MotorB.setState(Vector3D(-20, 0, 0));
+    MotorC.setState(Vector3D(-20, 0, 0));
+    MotorD.setState(Vector3D(-20, 0, 0));
     return true;
 }

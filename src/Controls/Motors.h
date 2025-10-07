@@ -32,10 +32,10 @@ class Motor{
 };
 
 struct Servos{
-    Motor MotorA = Motor(2);
-    Motor MotorB = Motor(3);
-    Motor MotorC = Motor(4);
-    Motor MotorD = Motor(6);
+    Motor MotorA = Motor(33);
+    Motor MotorB = Motor(36);
+    Motor MotorC = Motor(37);
+    Motor MotorD = Motor(29);
 
     bool init();
     Vector<size_t, MOTOR_CT>* MotorAddrs;

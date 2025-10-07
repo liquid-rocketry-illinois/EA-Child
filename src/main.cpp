@@ -66,7 +66,7 @@ void loop() {
     static unsigned long nextUpdateMicros = micros();
     const unsigned long interval = 1000000 / DATA_WRITE_FREQUENCY;
     int loops = 0;
-    sensors->Update();
+    
     
     //DataCard->SDWrite(); // FILL IN WITH SENSORS' DATA
 
@@ -75,8 +75,10 @@ void loop() {
         nextUpdateMicros += interval;  // lock to 100 Hz schedule
 
         // ---- Sensor + Logging ----
+        sensors->Update();
         motors->testMotors();
-        DataCard->SDWrite(sensors->Update()); // FILL IN WITH SENSORS' DATA
+        while(1){;}
+        //DataCard->SDWrite(sensors->Update()); // FILL IN WITH SENSORS' DATA
         if (loops >= 100000){
             while(1){;} // Stop loop
         }
