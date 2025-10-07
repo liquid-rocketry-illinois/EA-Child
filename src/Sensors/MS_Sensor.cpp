@@ -6,37 +6,19 @@
  * 
  */
 void MSSensors::init(){
-  while (!Serial);
-  Serial.println();
-  Serial.println(__FILE__);
-  Serial.print("MS5611_LIB_VERSION: ");
-  Serial.println(MS5611_LIB_VERSION); 
-  Serial.println();
+    Wire2.setClock(100000); // Only need to set clk speed, main.cpp inits everything else
 
-  Wire2.begin();
-  Wire2.setClock(100000);
+    if (MSSensor.begin()){
+      MSstatus = true;
+      MSSensor.setOversampling(OSR_ULTRA_HIGH);
 
-  delay(20);  
-
-  if (MSSensor.begin()){
-    Serial.print("MS5611 found: ");
-    Serial.println(MSSensor.getAddress());
-    MSstatus = true;
-    MSSensor.setOversampling(OSR_ULTRA_HIGH);
-
-    // Hook SensorData to sensor
-    Data.setBarometer(&MSSensor);
-  }else{
-    // Keep retrying
-    while(!MSSensor.begin()){ 
-      Serial.println("MS5611 not found. Check connections.");
-      delay(1000);
+      // Hook SensorData to sensor
+      Data.setBarometer(&MSSensor);
+      Serial.print("MS5611 initialised on address: "); 
+      Serial.println(MSSensor.getAddress());
     }
-    MSstatus = true;
-    Data.setBarometer(&MSSensor);
+    else Serial.println("MS5611 not found or unable to initialize!");
   }
-  Serial.println("MS5611 initialised.");
-}
 
 /**
  * update returns a SensorReading struct with .temperature, .pressure

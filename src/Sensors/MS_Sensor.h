@@ -25,7 +25,7 @@ class SensorData{
 };
 
 struct MSSensors{
-    MS5611 MSSensor = MS5611(0x77, &Wire2); // Explicitly use wire2
+    MS5611 MSSensor = MS5611(0x77, &Wire1); // Explicitly use wire1
     bool MSstatus = false;
     SensorData Data;
 
