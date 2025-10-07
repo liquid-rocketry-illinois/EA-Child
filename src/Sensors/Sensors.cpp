@@ -8,6 +8,6 @@ bool Sensors::InitSensors(){
 }
 
 // Separating Sensors because idfk actually
-void Sensors::Update(){
-    Sensors::IMUs.Update();
+String Sensors::Update(){
+    return Sensors::IMUs.Update();
 }

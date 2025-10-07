@@ -52,12 +52,12 @@ class SDCard{
         String Pres = (String)Pressure;
         String Humid = (String)Humidity;
 
-        String dataString = mix + " " + miy + " " + miz + " "
-                             + six + " " + siy + " " + siz + " "
-                              + mx + " " + my + " " + mz + " "
-                               + Temp + " "
-                                + Pres + " "
-                                 + Humid + " ";
+        String dataString = mix + " " + miy + " " + miz + " | "
+                             + six + " " + siy + " " + siz + " | "
+                              + mx + " " + my + " " + mz + " | "
+                               + Temp + " | "
+                                + Pres + " | "
+                                 + Humid + "\n";
 
         // open the file. note that only one file can be open at a time,
         // so you have to close this one before opening another.

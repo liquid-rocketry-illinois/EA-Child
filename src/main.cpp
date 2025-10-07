@@ -35,9 +35,15 @@ Sensors* sensors;
 Servos* motors;
 
 void setup() {
+    // All pins default to an INPUT designation
+    pinMode(31, OUTPUT); // PYRO ONE
+    pinMode(32, OUTPUT); // PYRO TWO
+    digitalWrite(31, LOW);
+    digitalWrite(32, LOW); // Initialize as low signal to represent 'off'. 
+                           // In case the write value isn't already low (this shouldn't happen though)
     Serial.begin(115200);
     while (!Serial) {
-        ; // wait for serial port to connect. remove line when testing
+        ; // wait for serial port to connect. remove line after testing
     }
 
     if (!Wire.available()) Wire.begin();
@@ -46,7 +52,7 @@ void setup() {
 
     // Now construct the objects
     DataCard = new SDCard();
-    sensors  = new Sensors();
+    sensors  = new Sensors;
     motors = new Servos;
 
     DataCard->init();
@@ -54,27 +60,23 @@ void setup() {
     if (!sensors->InitSensors()) Serial.println("One or multiple sensors failed!");
     else Serial.println("All sensors initialized");
     motors->init();
-
-    // All pins default to an INPUT designation
-    pinMode(31, OUTPUT); // PYRO ONE
-    pinMode(32, OUTPUT); // PYRO TWO
-    digitalWrite(31, LOW);
-    digitalWrite(32, LOW); //Initialize as low signal to represent 'off'. In case the write value isn't already low (this shouldn't happen though)
 }
 
 void loop() {
     static unsigned long nextUpdateMicros = micros();
     const unsigned long interval = 1000000 / DATA_WRITE_FREQUENCY;
+    int loops = 0;
 
     unsigned long now = micros();
     if ((long)(now - nextUpdateMicros) >= 0) {
         nextUpdateMicros += interval;  // lock to 100 Hz schedule
 
         // ---- Sensor + Logging ----
-        sensors->Update();
         motors->testMotors();
-        while(1){;} // Stop loop
-        //DataCard->SDWrite(); // FILL IN WITH SENSORS' DATA
+        DataCard->SDWrite(sensors->Update()); // FILL IN WITH SENSORS' DATA
+        if (loops >= 100000){
+            while(1){;} // Stop loop
+        }
 /*
         // ---- Frequency Monitor ----
         static unsigned long lastFreqPrint = millis();
@@ -103,4 +105,5 @@ void loop() {
         // sleep until the next update window
         delayMicroseconds((unsigned long)(nextUpdateMicros - now));
     }
+    loops++;
 }

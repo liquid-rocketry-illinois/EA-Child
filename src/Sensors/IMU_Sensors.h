@@ -70,5 +70,5 @@ struct IMUSensors {
 
     void setReports();
     void Init();
-    void Update();
+    String Update();
 };

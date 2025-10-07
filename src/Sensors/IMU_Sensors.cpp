@@ -1,4 +1,5 @@
 #include "IMU_Sensors.h"
+#include "SDCard.h"
 
 GNCData::GNCData(ICM42688* secIMU, BNO08x* mainIMU)
     : Secondary(secIMU), Main(mainIMU){
@@ -79,7 +80,9 @@ void IMUSensors::Init(){
     
 }
 
-void IMUSensors::Update(){
+String IMUSensors::Update(){
+    String string; // CONTAINS DATA
+
     if (MainIMU.wasReset()) {
         //Serial.print("sensor was reset "); // COMMENT OUT WHEN DONE
         setReports();
@@ -130,7 +133,7 @@ void IMUSensors::Update(){
             Data.Magnet->setX(MainIMU.getMagX());
             Data.Magnet->setY(MainIMU.getMagY());
             Data.Magnet->setZ(MainIMU.getMagZ());
-
+/*
             Serial.print(millis());                         Serial.print(" ");Serial.print(" . ");
 
             Serial.print(Data.Magnet->getX());              Serial.print(" ");
@@ -153,10 +156,17 @@ void IMUSensors::Update(){
             Serial.print(Data.alpha->getY());              Serial.print(" ");
             Serial.print(Data.alpha->getZ());              Serial.print(" ");Serial.print(" . ");
             Serial.println(millis());
-            //Serial.println("Data printed for BNO.");
+            */
+           string = (String)millis() + " | " + (String)Data.Magnet->getX() + " " + (String)Data.Magnet->getY() + " " + 
+            (String)Data.Magnet->getZ() + " | " + (String)Data.pyr->getX() + " " + (String)Data.pyr->getY() + " " + 
+            (String)Data.pyr->getZ()  + " | " + (String)Data.A->getX() + " " + (String)Data.A->getY() + " " +             
+            (String)Data.A->getZ() + " | " + (String)Data.omega->getX() + " " + (String)Data.omega->getY() + " " + 
+            (String)Data.omega->getZ() + " | " + (String)Data.alpha->getX() + " " + (String)Data.alpha->getY() + " " + 
+            (String)Data.alpha->getZ() + " | " + (String)millis();
         }
     }
     else Serial.println("Sensor data incorrect!");
+
 
     // -------- SECONDARY ---------
 /*
@@ -177,4 +187,5 @@ void IMUSensors::Update(){
     }
     else Serial.println("Secondary IMU Data Fail!");
     */
+   return string;
 }
