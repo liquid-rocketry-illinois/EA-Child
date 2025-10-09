@@ -28,7 +28,7 @@
 #include "Sensors\Sensors.h"
 #include "Controls\Motors.h"
 
-#define DATA_WRITE_FREQUENCY 100 // Hertz
+#define DATA_WRITE_FREQUENCY 10 // Hertz
 
 SDCard* DataCard; 
 Sensors* sensors;
@@ -63,25 +63,18 @@ void setup() {
 }
 
 void loop() {
+    
     static unsigned long nextUpdateMicros = micros();
     const unsigned long interval = 1000000 / DATA_WRITE_FREQUENCY;
-    int loops = 0;
-    
-    
-    //DataCard->SDWrite(); // FILL IN WITH SENSORS' DATA
 
     unsigned long now = micros();
     if ((long)(now - nextUpdateMicros) >= 0) {
-        nextUpdateMicros += interval;  // lock to 100 Hz schedule
+        nextUpdateMicros += interval;
 
         // ---- Sensor + Logging ----
-        sensors->Update();
-        motors->testMotors();
-        while(1){;}
-        //DataCard->SDWrite(sensors->Update()); // FILL IN WITH SENSORS' DATA
-        if (loops >= 100000){
-            while(1){;} // Stop loop
-        }
+        //motors->testMotors();
+        //while(1){;}
+        sensors->Update(); // FILL IN WITH SENSORS' DATA
 /*
         // ---- Frequency Monitor ----
         static unsigned long lastFreqPrint = millis();
@@ -110,5 +103,4 @@ void loop() {
         // sleep until the next update window
         delayMicroseconds((unsigned long)(nextUpdateMicros - now));
     }
-    loops++;
 }

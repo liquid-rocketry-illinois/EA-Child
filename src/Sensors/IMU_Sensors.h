@@ -43,7 +43,7 @@ private:
     BNO08x* Main;
 
 public:
-    Vector3D* pyr = new Vector3D(pitch, yaw, roll);
+    Vector3D* pyyr = new Vector3D(pitch, yaw, roll);
     Vector3D* omega = new Vector3D(omegaX, omegaY, omegaZ);
     Vector3D* alpha = new Vector3D(alphaX, alphaY, alphaZ);
     Vector3D* U   = new Vector3D(vX, vY, vZ); // Velocity
@@ -51,9 +51,6 @@ public:
     Vector3D* Magnet = new Vector3D(mX, mY, mZ); // Magnetometer data
 
     GNCData(ICM42688* secIMU, BNO08x* mainIMU);
-
-    Vector3D CalculateVelocity();
-    Vector3D CalculateAcceleration();
 
     ~GNCData();
 };
@@ -70,5 +67,6 @@ struct IMUSensors {
 
     void setReports();
     void Init();
+    Vector3D* directPYR(Vector3D* accel, Vector3D* gyro, Vector3D* magn, double dt);
     String Update();
 };

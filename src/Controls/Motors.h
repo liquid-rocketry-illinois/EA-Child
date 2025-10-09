@@ -40,5 +40,8 @@ struct Servos{
     bool init();
     Vector<size_t, MOTOR_CT>* MotorAddrs;
     void setMotorAddrs();
+    void actuate(double angle, bool radians = false);
     bool testMotors();
+
+    static int lastFiveAngles[5];
 }; 

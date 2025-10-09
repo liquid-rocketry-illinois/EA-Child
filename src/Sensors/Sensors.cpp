@@ -1,19 +1,19 @@
 #include "Sensors.h"
 
 bool Sensors::InitSensors(){
-    Sensors::IMUs.Init();
+    IMUs.Init();
     // Debug printlns
     Serial.print("Intializing MS sensor");
-    Serial.print(Sensors::MSSensor.MSstatus);
+    Serial.print(MSSensor.MSstatus);
     
-    Sensors::MSSensor.init();
+    MSSensor.init();
     // Add init functions for other sensors
 
     return (IMUs.MainStatus && IMUs.SecStatus && MSSensor.MSstatus); // Add statuses for the other sensors
 }
 
-// Separating Sensors because idfk actually
 String Sensors::Update(){
-    return Sensors::IMUs.Update();
-    //Sensors::MSSensor.update();  Convert to string of data
+    String result = IMUs.Update();
+    // String MSresult = MSSensor.update();  Convert to string of data
+    return result;
 }

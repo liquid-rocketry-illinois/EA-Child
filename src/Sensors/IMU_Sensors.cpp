@@ -1,46 +1,41 @@
 #include "IMU_Sensors.h"
 #include "SDCard.h"
+#include "../Math/HelpersFunctions.h"
 
 GNCData::GNCData(ICM42688* secIMU, BNO08x* mainIMU)
     : Secondary(secIMU), Main(mainIMU){
-        pyr->setX(0);
-        pyr->setY(0);
-        pyr->setZ(0);
+        pyyr->setX(0);
+        pyyr->setY(0);
+        pyyr->setZ(0);
         U->setX(0);
         U->setY(0);
         U->setZ(0);
     }
 
-Vector3D GNCData::CalculateVelocity(){
-    return Vector3D();
-}
-
-Vector3D GNCData::CalculateAcceleration(){
-    return Vector3D();
-}
-
-GNCData::~GNCData() {
-    delete pyr;
-    delete U;
-}
+GNCData::~GNCData() {}
 
 void IMUSensors::setReports() {
-  Serial.println("Setting desired reports");
-  if (MainIMU.enableRotationVector() == true) {
-    Serial.println(F("Rotation vector enabled"));
-    Serial.println(F("Output in form roll, pitch, yaw"));
-  } else {
-    Serial.println("Could not enable rotation vector");
-  }
+    MainIMU.enableAccelerometer();
+    Helpers::delayMS(30);
+    MainIMU.enableMagnetometer();
+    Helpers::delayMS(30);
+    MainIMU.enableGyro();
+    Helpers::delayMS(30);
+    (MainIMU.enableRotationVector(4));// Serial.println("Output pitch yaw roll");
+    Helpers::delayMS(100);
 }
 
 void IMUSensors::Init(){
+    // Manually call BNO reset and put into SPI mode
     pinMode(MAIN_IMU_PS0, OUTPUT);
     pinMode(MAIN_IMU_PS1, OUTPUT);
+    pinMode(MAIN_IMU_RST, OUTPUT);
 
-    digitalWrite(MAIN_IMU_PS0, HIGH);
+    digitalWrite(MAIN_IMU_PS0, HIGH); // PS0 and PS1 == HIGH in order to set as SPI communication
     digitalWrite(MAIN_IMU_PS1, HIGH);
+    digitalWrite(MAIN_IMU_RST, LOW); // Reset BNO
 
+    // Using Secondary IMU init as in-between time to give BNO time to reset
     if (!SecondaryIMU.begin()){
         Serial.println("Failed to find ICM42688 chip");
     }
@@ -58,6 +53,11 @@ void IMUSensors::Init(){
         SecondaryIMU.calibrateAccel();
         SecondaryIMU.calibrateGyro();
     }
+
+    // Turn BNO back on, wait 300ms to reboot
+    digitalWrite(MAIN_IMU_RST, HIGH);
+    Helpers::delayMS(300);
+
     if (!MainIMU.beginSPI(MAIN_IMU_CS, MAIN_IMU_INT, MAIN_IMU_RST)) {
         Serial.println("Failed to find BNO08x chip");
         digitalWrite(MAIN_IMU_PS0, LOW);
@@ -66,106 +66,123 @@ void IMUSensors::Init(){
     else{
         Serial.println("BNO08x Found!");
         MainStatus = true;
+        MainIMU.softReset();
+        Helpers::delayMS(500);
 
+        setReports();
+        Helpers::delayMS(50);
         MainIMU.clearTare();
         MainIMU.tareNow();
+        Helpers::delayMS(50);
 
-        MainIMU.enableAccelerometer();
-        MainIMU.enableMagnetometer();
-        MainIMU.enableGyro();
-        setReports();
+        MainIMU.saveTare();
+
+        
     } 
     
     IMUSensors::Data = GNCData(&SecondaryIMU, &MainIMU);
     
 }
 
-String IMUSensors::Update(){
-    String string; // CONTAINS DATA
+Vector3D* IMUSensors::directPYR(Vector3D* accel, Vector3D* gyro, Vector3D* mag, double dt) {
+    static Vector3D ypr = Vector3D(0,0,0);
 
+    // --- Step 1: Calculate pitch and roll from accelerometer ---
+    float pitchAcc = atan2f(-accel->getX(), sqrtf(accel->getY() * accel->getY() + accel->getZ() * accel->getZ()));
+    float rollAcc  = atan2f(accel->getY(), accel->getZ());
+
+    // --- Step 2: Integrate gyro data ---
+    ypr.setY(ypr.getY() + (gyro->getX() * dt)); // PITCH
+    ypr.setZ(ypr.getZ() + (gyro->getY() * dt)); // ROLL
+    ypr.setX(ypr.getX() + (gyro->getZ() * dt))   ; // YAW
+
+    // --- Step 3: Fuse accel angles with gyro (complementary filter) ---
+    const float alpha = 0.98f;  // 0.98 = trust gyro more, 0.02 = trust accel more
+    ypr.setY(alpha * ypr.getY() + (1.0f - alpha) * pitchAcc);
+    ypr.setZ(alpha * ypr.getZ()  + (1.0f - alpha) * rollAcc);
+
+    // --- Step 4: Compute yaw from magnetometer and tilt-compensate ---
+    float sinPitch = sinf(ypr.getY());
+    float cosPitch = cosf(ypr.getY());
+    float sinRoll  = sinf(ypr.getZ());
+    float cosRoll  = cosf(ypr.getZ());
+
+    // Tilt compensation
+    float Xh = mag->getX() * cosPitch + mag->getZ() * sinPitch;
+    float Yh = mag->getX() * sinRoll * sinPitch + mag->getY() * cosRoll - mag->getZ() * sinRoll * cosPitch;
+    ypr.setX(atan2f(-Yh, Xh));
+
+    // Optional: convert radians → degrees
+    ypr.setY(ypr.getY() * 180.0f / PI);
+    ypr.setZ(ypr.getZ() * 180.0f / PI);
+    ypr.setX(ypr.getX() * 180.0f / PI); 
+    // Normalize yaw to [0, 360)
+    if (ypr.getX() < 0) ypr.setX(ypr.getX() + 360.0f); 
+
+    return &ypr;
+}
+
+String IMUSensors::Update(){
+    static unsigned long beforeBNO;
+    static unsigned long afterBNO;
+    static Vector3D prevOmega = Vector3D(0,0,0);
+
+    beforeBNO = millis();
     if (MainIMU.wasReset()) {
-        //Serial.print("sensor was reset "); // COMMENT OUT WHEN DONE
+        Serial.println("sensor was reset "); // COMMENT OUT WHEN DONE
         setReports();
     }
-/*
-    static bool Calibrated = false;
-    static const uint16_t first_millis = (uint16_t)millis();
-
-    if (((millis() - first_millis) > 2000) && (Calibrated == false)){
-        MainIMU.tareNow();
-        if (MainIMU.clearTare()) {
-            delayMicroseconds(100000);
-            MainIMU.tareNow();
-            MainIMU.saveTare();
-        }
-        Calibrated = true;
-    }
-*/
 
     // -------- MAIN ----------
     if (MainIMU.getSensorEvent()) {
-        // is it the correct sensor data we want?
-        if (MainIMU.getSensorEventID() == SENSOR_REPORTID_ROTATION_VECTOR) {
-            Data.pyr->setX((MainIMU.getPitch()) * 180.0 / PI);
-            Data.pyr->setY((MainIMU.getYaw()) * 180.0 / PI);
-            Data.pyr->setZ((MainIMU.getRoll()) * 180.0 / PI);
+        uint8_t sensestate = MainIMU.getSensorEventID();
+        //Serial.println(sensestate);
 
+        if(sensestate == SENSOR_REPORTID_ROTATION_VECTOR){
+            //Serial.println(MainIMU.getPitch() * 180.0 / PI);
+            //Serial.println(MainIMU.getYaw() * 180.0 / PI);
+            //Serial.println(MainIMU.getRoll() * 180.0 / PI);
+
+            Data.pyyr->setX(MainIMU.getPitch() * 180.0 / PI);
+            Data.pyyr->setY(MainIMU.getYaw() * 180.0 / PI);
+            Data.pyyr->setZ(MainIMU.getRoll() * 180.0 / PI);
+        }
+        
+        if (sensestate == SENSOR_REPORTID_GYROSCOPE_CALIBRATED){
             Data.omega->setX(MainIMU.getGyroX());
             Data.omega->setY(MainIMU.getGyroY());
             Data.omega->setZ(MainIMU.getGyroZ());
 
-            static Vector3D prevOmega(0,0,0);
-            static unsigned long prevMicros = micros();
+            static unsigned long prevMicros = 0;
             unsigned long currMicros = micros();
-            float dt = (currMicros - prevMicros) / 1.0e6; // convert µs to seconds
-            if (dt > 0) {
-                Data.alpha->setX((Data.omega->getX() - prevOmega.getX()) / dt);
-                Data.alpha->setY((Data.omega->getY() - prevOmega.getY()) / dt);
-                Data.alpha->setZ((Data.omega->getZ() - prevOmega.getZ()) / dt);
+            if (prevMicros > 0) {
+                float dt = (long)(currMicros - prevMicros) / 1.0e6f;
+                if (dt > 0) {
+                    // Low pass filtering to smooth data
+                    Data.alpha->setX(0.2f * ((MainIMU.getGyroX() - prevOmega.getX()) / dt) + (1 - 0.2f) * Data.alpha->getX());
+                    Data.alpha->setY(0.2f * ((MainIMU.getGyroY() - prevOmega.getY()) / dt) + (1 - 0.2f) * Data.alpha->getY());
+                    Data.alpha->setZ(0.2f * ((MainIMU.getGyroZ() - prevOmega.getZ()) / dt) + (1 - 0.2f) * Data.alpha->getZ());
+                }
             }
-            prevOmega = *Data.omega;
+            prevOmega.setX(MainIMU.getGyroX());
+            prevOmega.setY(MainIMU.getGyroY());
+            prevOmega.setZ(MainIMU.getGyroZ());
             prevMicros = currMicros;
+        }
 
+        if (sensestate == SENSOR_REPORTID_ACCELEROMETER){
             Data.A->setX(MainIMU.getAccelX());
             Data.A->setY(MainIMU.getAccelY());
             Data.A->setZ(MainIMU.getAccelZ());
+        }
 
+        if (sensestate == SENSOR_REPORTID_MAGNETIC_FIELD){
             Data.Magnet->setX(MainIMU.getMagX());
             Data.Magnet->setY(MainIMU.getMagY());
             Data.Magnet->setZ(MainIMU.getMagZ());
-/*
-            Serial.print(millis());                         Serial.print(" ");Serial.print(" . ");
-
-            Serial.print(Data.Magnet->getX());              Serial.print(" ");
-            Serial.print(Data.Magnet->getY());              Serial.print(" ");
-            Serial.print(Data.Magnet->getZ());              Serial.print(" ");Serial.print(" . ");
-
-            Serial.print(Data.pyr->getX());              Serial.print(" ");
-            Serial.print(Data.pyr->getY());              Serial.print(" ");
-            Serial.print(Data.pyr->getZ());              Serial.print(" ");Serial.print(" . ");
-
-            Serial.print(Data.A->getX());              Serial.print(" ");
-            Serial.print(Data.A->getY());              Serial.print(" ");
-            Serial.print(Data.A->getZ());              Serial.print(" ");Serial.print(" . ");
-
-            Serial.print(Data.omega->getX());              Serial.print(" ");
-            Serial.print(Data.omega->getY());              Serial.print(" ");
-            Serial.print(Data.omega->getZ());              Serial.print(" ");Serial.print(" . ");
-
-            Serial.print(Data.alpha->getX());              Serial.print(" ");
-            Serial.print(Data.alpha->getY());              Serial.print(" ");
-            Serial.print(Data.alpha->getZ());              Serial.print(" ");Serial.print(" . ");
-            Serial.println(millis());
-            */
-           string = (String)millis() + " | " + (String)Data.Magnet->getX() + " " + (String)Data.Magnet->getY() + " " + 
-            (String)Data.Magnet->getZ() + " | " + (String)Data.pyr->getX() + " " + (String)Data.pyr->getY() + " " + 
-            (String)Data.pyr->getZ()  + " | " + (String)Data.A->getX() + " " + (String)Data.A->getY() + " " +             
-            (String)Data.A->getZ() + " | " + (String)Data.omega->getX() + " " + (String)Data.omega->getY() + " " + 
-            (String)Data.omega->getZ() + " | " + (String)Data.alpha->getX() + " " + (String)Data.alpha->getY() + " " + 
-            (String)Data.alpha->getZ() + " | " + (String)millis();
         }
     }
-    else Serial.println("Sensor data incorrect!");
+    afterBNO = millis();
 
 
     // -------- SECONDARY ---------
@@ -187,5 +204,18 @@ String IMUSensors::Update(){
     }
     else Serial.println("Secondary IMU Data Fail!");
     */
-   return string;
+   
+    char buffer[400];
+    snprintf(buffer, sizeof(buffer),
+        "%lu|%.3f,%.3f,%.3f|%.3f,%.3f,%.3f|%.3f,%.3f,%.3f|%.3f,%.3f,%.3f|%.3f,%.3f,%.3f|%lu",
+        beforeBNO,
+        Data.Magnet->getX(), Data.Magnet->getY(), Data.Magnet->getZ(),
+        Data.pyyr->getX(), Data.pyyr->getY(), Data.pyyr->getZ(),
+        Data.A->getX(), Data.A->getY(), Data.A->getZ(),
+        Data.omega->getX(), Data.omega->getY(), Data.omega->getZ(),
+        Data.alpha->getX(), Data.alpha->getY(), Data.alpha->getZ(),
+        afterBNO
+    );
+    Serial.println(buffer);
+    return String(buffer);
 }

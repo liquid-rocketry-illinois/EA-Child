@@ -12,6 +12,7 @@ void Motor::tare(){
 
 bool Motor::init(){
     tare();
+    return true;
 }
 
 // State vector: Vector3D(ending position, <unused>>, <unused>)). This may change soon
@@ -49,10 +50,30 @@ bool Servos::init(){
     return true;
 }
 
+// Set 'radians' to true if your input angle is in radians
+void Servos::actuate(double angle, bool radians = false){
+    int a;
+    if (radians){
+        a = int(angle * 180/PI);
+    }
+    else a = (int)angle;
+
+    MotorA.setState(Vector3D(a, 0, 0));
+    MotorB.setState(Vector3D(a, 0, 0));
+    MotorC.setState(Vector3D(a, 0, 0));
+    MotorD.setState(Vector3D(a, 0, 0));
+
+    for (int i = 4; i > 0; i--){
+        lastFiveAngles[i-1] = lastFiveAngles[i];
+    }
+    lastFiveAngles[4] = a;
+}
+
 bool Servos::testMotors(){
     MotorA.setState(Vector3D(-20, 0, 0));
     MotorB.setState(Vector3D(-20, 0, 0));
     MotorC.setState(Vector3D(-20, 0, 0));
     MotorD.setState(Vector3D(-20, 0, 0));
-    return true;
+
+    return true; // Was going to use but now its whatever
 }
