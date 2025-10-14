@@ -10,6 +10,9 @@
         "atomic": "cpp",
         "istream": "cpp",
         "streambuf": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "dense": "cpp",
+        "core": "cpp",
+        "cholesky": "cpp"
     }
 }

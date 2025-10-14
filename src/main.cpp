@@ -27,6 +27,7 @@
 #include "SDCard.h"
 #include "Sensors\Sensors.h"
 #include "Controls\Motors.h"
+#include "Controls\Tests.h"
 
 #define DATA_WRITE_FREQUENCY 10 // Hertz
 
@@ -42,9 +43,10 @@ void setup() {
     digitalWrite(32, LOW); // Initialize as low signal to represent 'off'. 
                            // In case the write value isn't already low (this shouldn't happen though)
     Serial.begin(115200);
-    while (!Serial) {
-        ; // wait for serial port to connect. remove line after testing
-    }
+    //while (!Serial) {
+    //    ; // wait for serial port to connect. remove line after testing
+    //}
+    
 
     if (!Wire.available()) Wire.begin();
     if (!Wire1.available()) Wire1.begin();
@@ -70,11 +72,12 @@ void loop() {
     unsigned long now = micros();
     if ((long)(now - nextUpdateMicros) >= 0) {
         nextUpdateMicros += interval;
-
+        
         // ---- Sensor + Logging ----
         //motors->testMotors();
         //while(1){;}
-        sensors->Update(); // FILL IN WITH SENSORS' DATA
+        //sensors->Update(); // FILL IN WITH SENSORS' DATA
+        Tests::Ejection_Test();
 /*
         // ---- Frequency Monitor ----
         static unsigned long lastFreqPrint = millis();
