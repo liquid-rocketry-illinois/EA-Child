@@ -1,12 +1,13 @@
 #pragma once
 
 #include "../Sensors/Sensors.h"
+#include <Arduino.h>
 //#include <Eigen/Dense> // External library for matrix calcs
 
-namespace Controls {
-    Sensors sensors;
+struct Controls {
+    Sensors* Data;
 
-    void Init();
-    void Update();
-}
+    void Init(Sensors* sensor);
+    String Update();
+};
 

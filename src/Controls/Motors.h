@@ -27,7 +27,7 @@ class Motor{
     Vector3D getState();
     void tare();
     void setState(Vector3D toState);
-    void Update();
+    String Update();
     bool IsActive();
 };
 

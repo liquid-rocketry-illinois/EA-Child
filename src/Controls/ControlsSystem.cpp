@@ -1,13 +1,17 @@
 #include "ControlsSystem.h"
 
-void Controls::Init(){
-    sensors.InitSensors();
-
-    // ONE-TIME RUNNING CODE
+void Controls::Init(Sensors* sensors){
+    this->Data = sensors;
 }
 
-void Controls::Update(){
-    sensors.Update();
+String Controls::Update(){
+    Data->Update();
 
     // CONTROLLER CODE
+
+
+
+    // END CONTROLLER CODE
+
+    return (String)(12); // Return actuation amount
 }
