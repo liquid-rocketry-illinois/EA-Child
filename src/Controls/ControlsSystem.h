@@ -1,13 +1,62 @@
 #pragma once
 
+#include <ArduinoEigen.h>
+#include <iostream>
 #include "../Sensors/Sensors.h"
 #include <Arduino.h>
-//#include <Eigen/Dense> // External library for matrix calcs
 
-struct Controls {
+
+using Eigen::MatrixXd;
+
+struct CTRLS {
     Sensors* Data;
 
     void Init(Sensors* sensor);
     String Update();
 };
 
+class Controls{
+    public: 
+
+    Controls(float t_motor_burnout, 
+             float t_estimated_apogee,
+             float t_launch_rail_clearance,
+             float prop_mass,
+             float L_ne,
+             float dt,
+             MatrixXd Ks,
+             MatrixXd L,
+             MatrixXd x0,
+             MatrixXd u0);
+    ~Controls();
+
+    float t_motor_burnout; // seconds
+    float t_estimated_apogee; // seconds
+    float t_launch_rail_clearance; // seconds
+    float prop_mass; // kg
+    float L_ne; // m
+    const String csv_path = "Maurice2/data/openrocket_data.csv"; // Change this before launch?
+    MatrixXd A;
+    MatrixXd B;
+    MatrixXd C;
+    MatrixXd f_preburnout;
+    MatrixXd f_postburnout;
+    MatrixXd Ks;
+    MatrixXd L;
+    //float[###] vars; // Need number of vars
+    MatrixXd f_params;
+    MatrixXd f_subs;
+    float dt;
+
+    MatrixXd x0;
+    MatrixXd u0;
+    //float t_sym; // Symbolic
+    nullptr_t T; // What will this be
+    nullptr_t g; // What will this be
+
+    // Logging (Output matrices?)
+    MatrixXd states;
+    MatrixXd inputs;
+    MatrixXd As;
+    MatrixXd Bs;
+};

@@ -1,10 +1,10 @@
 #include "ControlsSystem.h"
 
-void Controls::Init(Sensors* sensors){
+void CTRLS::Init(Sensors* sensors){
     this->Data = sensors;
 }
 
-String Controls::Update(){
+String CTRLS::Update(){
     Data->Update();
 
     // CONTROLLER CODE
@@ -14,4 +14,44 @@ String Controls::Update(){
     // END CONTROLLER CODE
 
     return (String)(12); // Return actuation amount
+}
+
+Controls::Controls( float t_motor_burnout = 1.971, 
+                    float t_estimated_apogee = 13.571,
+                    float t_launch_rail_clearance = 0.164,
+                    float prop_mass = 0.355,
+                    float L_ne = 1.17,
+                    float dt = 0.01,
+                    MatrixXd Ks = MatrixXd(2, 2),
+                    MatrixXd L = MatrixXd(2, 2),
+                    MatrixXd x0 = MatrixXd(2, 2),
+                    MatrixXd u0 = MatrixXd(2, 2) ){
+    this->t_motor_burnout = t_motor_burnout; // seconds
+    this->t_estimated_apogee = t_estimated_apogee; // seconds
+    this->t_launch_rail_clearance = t_launch_rail_clearance; // seconds
+    this->prop_mass = prop_mass; // kg
+    this->L_ne = L_ne; // m
+
+    this->A = MatrixXd();
+    this->B = MatrixXd();
+    this->C = MatrixXd();
+    //this->f_preburnout;
+    //this->f_postburnout;
+    this->Ks = Ks;
+    this->L = L;
+    //this->vars;
+    //this->f_params;
+    //this->f_subs;
+    this->dt = dt;
+    this->x0 = x0;
+    this->u0 = u0;
+    //this->t_sym;
+    //this->T;
+    //this->g;
+
+    // Logging
+    this->states = MatrixXd();
+    this->inputs = MatrixXd();
+    this->As = MatrixXd();
+    this->Bs = MatrixXd();
 }

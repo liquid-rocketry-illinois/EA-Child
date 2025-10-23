@@ -13,6 +13,11 @@
         "utility": "cpp",
         "dense": "cpp",
         "core": "cpp",
-        "cholesky": "cpp"
+        "cholesky": "cpp",
+        "lu": "cpp",
+        "*.inc": "cpp",
+        "*.evaluator": "cpp",
+        "alignedvector3": "cpp",
+        "nnls": "cpp"
     }
 }

@@ -12,7 +12,7 @@ namespace Procedures{
     SDCard* DataCard; 
     Sensors* sensors;
     Servos* motors;
-    Controls* Controller;
+    CTRLS* Controller;
 
     void ___MAINSETUP(){
         // All pins default to an INPUT designation
@@ -36,7 +36,7 @@ namespace Procedures{
         DataCard = new SDCard();
         sensors  = new Sensors;
         motors = new Servos;
-        Controller = new Controls;
+        Controller = new CTRLS;
 
         DataCard->init();
         DataCard->SDWrite("SD Initialization.");
@@ -60,7 +60,6 @@ namespace Procedures{
             DataCard->SDWrite(sensors->Update()); // FILL IN WITH SENSORS' DATA
             DataCard->SDWrite(Controller->Update());
 
-    /*
             // ---- Frequency Monitor ----
             static unsigned long lastFreqPrint = millis();
             static unsigned int loopCount = 0;
@@ -83,7 +82,7 @@ namespace Procedures{
                 nextUpdateMicros = now + interval;
                 Serial.println("Loop lagged! Resyncing schedule.");
             }
-    */
+
         } else {
             // sleep until the next update window
             delayMicroseconds((unsigned long)(nextUpdateMicros - now));

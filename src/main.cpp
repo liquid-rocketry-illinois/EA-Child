@@ -28,9 +28,12 @@
 #include "Controls/Tests.hpp"
 
 void setup() {
+    // Function that contains the runnning code for setup
     Procedures::___MAINSETUP();
 }
 
 void loop() {
+    // Function that contains the running code for looping (either main procedure or tests)
     Procedures::___MAIN();
+    //Tests::Ejection_Test();
 }
