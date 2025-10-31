@@ -9,11 +9,45 @@ String CTRLS::Update(){
 
     // CONTROLLER CODE
 
-
+    
 
     // END CONTROLLER CODE
 
     return (String)(12); // Return actuation amount
+}
+
+MatrixXd Controls::R_BW_from_q(float qw, float qx, float qy, float qz){
+    float norm = sqrt(qw*qw + qx*qx + qy*qy + qz*qz);
+    if (norm < 1e-12) norm = 1e-12;
+    float s = 1.0 / norm;
+
+    qw *= s;
+    qx *= s;
+    qy *= s;
+    qz *= s;
+
+    float xx = qx*qx;
+    float yy = qy*qy;
+    float zz = qz*qz;
+
+    float wx = qw*qx;
+    float wy = qw*qy;
+    float wz = qw*qz;
+
+    float xy = qx*qy;
+    float xz = qx*qz;
+    float yz = qy*qz;
+
+    MatrixXd R(3,3);
+    R << 1-2*(yy+zz),   2*(xy+wz),   2*(xz-wy),
+         2*(xy-wz),     1-2*(xx+zz), 2*(yz+wx),
+         2*(xz+wy),     2*(yz-wx),   1-2*(xx+yy);
+    return R;
+}
+
+// TODO
+Controls::ABK_Matrices Controls::getABK(MatrixXd stateVector){
+
 }
 
 Controls::Controls( float t_motor_burnout = 1.971, 

@@ -6,6 +6,7 @@
 #include <Arduino.h>
 
 using Eigen::MatrixXd;
+using Eigen::Matrix;
 
 struct CTRLS {
     Sensors* Data;
@@ -28,6 +29,15 @@ class Controls{
              MatrixXd x0,
              MatrixXd u0);
     ~Controls();
+
+    struct ABK_Matrices {
+        Matrix<double,10,10> A;
+        Matrix<double,10,1>  B;
+        Matrix<double,1,10>  K;
+    };
+
+    MatrixXd R_BW_from_q(float qw, float qx, float qy, float qz);
+    ABK_Matrices getABK(MatrixXd stateVector);
 
     float t_motor_burnout; // seconds
     float t_estimated_apogee; // seconds
