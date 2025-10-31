@@ -1,7 +1,7 @@
 #include "ICM42688.h"
 #include "SparkFun_BNO08x_Arduino_Library.h"
-#include "..\Math\Vector3D.h"
-#include "..\Math\QuaternionMath.h"
+#include "../Math/Vector3D.h"
+#include "../Math/QuaternionMath.h"
 
 #define MAIN_IMU_CS 10
 #define MAIN_IMU_MOSI 11

@@ -1,7 +1,7 @@
 #pragma once
-#include "..\Math\Vector3D.h"
-#include "..\Math\QuaternionMath.h"
-#include "..\Math\Vector.h"
+#include "../Math/Vector3D.h"
+#include "../Math/QuaternionMath.h"
+#include "../Math/Vector.h"
 #include <Servo.h>
 
 #define MOTOR_CT 4

@@ -1,4 +1,4 @@
-#include "..\Controls\Motors.h"
+#include "../Controls/Motors.h"
 
 Motor::Motor(int pin){
     device.attach(pin);
