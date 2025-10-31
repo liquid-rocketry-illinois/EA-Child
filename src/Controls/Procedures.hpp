@@ -6,7 +6,7 @@
 #include "ControlsSystem.h"
 #include <Arduino.h>
 
-#define DATA_WRITE_FREQUENCY 10 // Hertz
+#define DATA_WRITE_FREQUENCY 100 // Hertz
 
 namespace Procedures{
     SDCard* DataCard; 

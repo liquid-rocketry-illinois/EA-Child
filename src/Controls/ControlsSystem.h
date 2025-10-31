@@ -5,7 +5,6 @@
 #include "../Sensors/Sensors.h"
 #include <Arduino.h>
 
-
 using Eigen::MatrixXd;
 
 struct CTRLS {
@@ -35,7 +34,7 @@ class Controls{
     float t_launch_rail_clearance; // seconds
     float prop_mass; // kg
     float L_ne; // m
-    const String csv_path = "Maurice2/data/openrocket_data.csv"; // Change this before launch?
+    const String csv_path = "Flight_Data.txt"; 
     MatrixXd A;
     MatrixXd B;
     MatrixXd C;
