@@ -16,6 +16,7 @@ String CTRLS::Update(){
     return (String)(12); // Return actuation amount
 }
 
+
 Controls::Controls( float t_motor_burnout = 1.971, 
                     float t_estimated_apogee = 13.571,
                     float t_launch_rail_clearance = 0.164,

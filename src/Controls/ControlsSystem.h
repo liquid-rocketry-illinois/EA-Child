@@ -28,7 +28,8 @@ class Controls{
              MatrixXd x0,
              MatrixXd u0);
     ~Controls();
-
+    
+    void Search_ABK();
     float t_motor_burnout; // seconds
     float t_estimated_apogee; // seconds
     float t_launch_rail_clearance; // seconds
