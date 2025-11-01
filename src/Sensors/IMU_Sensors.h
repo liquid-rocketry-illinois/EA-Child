@@ -49,6 +49,12 @@ public:
     Vector3D* U   = new Vector3D(vX, vY, vZ); // Velocity
     Vector3D* A   = new Vector3D(aX, aY, aZ); // Acceleration
     Vector3D* Magnet = new Vector3D(mX, mY, mZ); // Magnetometer data
+    struct Quaternions{ // Quaternion data
+        float i;
+        float j;
+        float k;
+        float r;
+    } *Quats; 
 
     GNCData(ICM42688* secIMU, BNO08x* mainIMU);
 

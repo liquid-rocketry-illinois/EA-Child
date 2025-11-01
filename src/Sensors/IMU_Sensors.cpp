@@ -142,6 +142,10 @@ String IMUSensors::Update(){
             //Serial.println(MainIMU.getPitch() * 180.0 / PI);
             //Serial.println(MainIMU.getYaw() * 180.0 / PI);
             //Serial.println(MainIMU.getRoll() * 180.0 / PI);
+            Data.Quats->i = MainIMU.getQuatI();
+            Data.Quats->j = MainIMU.getQuatJ();
+            Data.Quats->k = MainIMU.getQuatK();
+            Data.Quats->r = MainIMU.getQuatReal();
 
             Data.pyyr->setX(MainIMU.getPitch() * 180.0 / PI);
             Data.pyyr->setY(MainIMU.getYaw() * 180.0 / PI);
@@ -180,6 +184,10 @@ String IMUSensors::Update(){
             Data.Magnet->setX(MainIMU.getMagX());
             Data.Magnet->setY(MainIMU.getMagY());
             Data.Magnet->setZ(MainIMU.getMagZ());
+        }
+
+        if (sensestate == SENSOR_REPORTID_GAME_ROTATION_VECTOR){
+
         }
     }
     afterBNO = millis();
