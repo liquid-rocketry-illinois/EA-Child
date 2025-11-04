@@ -29,8 +29,8 @@ public:
 };
 
 struct MSSensors {
-    // Instantiate MS5611 specifically on Wire1 (Teensy 4.1 secondary I2C)
-    MS5611 MSSensor = MS5611(0x77, &Wire);
+    // Instantiate MS5611 specifically on Wire12 (Teensy 4.1 tertiary I2C)
+    MS5611 MSSensor = MS5611(0x77, &Wire2);
 
     bool MSstatus = false; // Will be set true if initialization succeeds
     SensorData Data;

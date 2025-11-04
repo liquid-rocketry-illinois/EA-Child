@@ -213,9 +213,9 @@ String IMUSensors::Update(){
     else Serial.println("Secondary IMU Data Fail!");
     */
    
-    char buffer[400];
+    char buffer[440];
     snprintf(buffer, sizeof(buffer),
-        "%lu|%.3f,%.3f,%.3f|%.3f,%.3f,%.3f|%.3f,%.3f,%.3f|%.3f,%.3f,%.3f|%.3f,%.3f,%.3f|%lu",
+        "||%lu|%.3f,%.3f,%.3f|%.3f,%.3f,%.3f|%.3f,%.3f,%.3f|%.3f,%.3f,%.3f|%.3f,%.3f,%.3f|%lu||",
         beforeBNO,
         Data.Magnet->getX(), Data.Magnet->getY(), Data.Magnet->getZ(),
         Data.pyyr->getX(), Data.pyyr->getY(), Data.pyyr->getZ(),

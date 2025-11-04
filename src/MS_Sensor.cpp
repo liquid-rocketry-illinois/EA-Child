@@ -44,7 +44,7 @@ void MSSensors::init() {
 // --- MSSensors::update() ---
 String MSSensors::Update() {
     if (!MSstatus) {
-        return String("0,0,0"); // Return zeros if sensor not initialized
+        return String(); // Return nothing if sensor not initialized
     }
     SensorReading data = Data.update();
 

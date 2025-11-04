@@ -6,7 +6,7 @@
 #include "ControlsSystem.h"
 #include <Arduino.h>
 
-#define DATA_WRITE_FREQUENCY 100 // Hertz
+#define DATA_WRITE_FREQUENCY 50 // Hertz
 
 class Procedures{
     private:

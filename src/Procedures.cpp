@@ -7,7 +7,11 @@ void Procedures::MAINSETUP(){
 
     Serial.begin(115200);
 
+    while (!Serial){;;}
+
+    SPI.begin();
     if (!Wire.available()) Wire.begin();
+    if (!Wire2.available()) Wire2.begin();
 
     DataCard->init();
     DataCard->SDWrite("SD Initialization.");
@@ -30,8 +34,9 @@ void Procedures::DRIVE_CONTROLS(){
         nextUpdateMicros += interval;
         
         // ---- Sensor + Logging ----
-        DataCard->SDWrite(sensors->Update()); // FILL IN WITH SENSORS' DATA
-        DataCard->SDWrite(Controller->Update());
+        //DataCard->SDWrite(sensors->Update()); // FILL IN WITH SENSORS' DATA
+        //DataCard->SDWrite(Controller->Update());
+        sensors->Update();
 
         // ---- Frequency Monitor ----
         static unsigned long lastFreqPrint = millis();
@@ -41,9 +46,9 @@ void Procedures::DRIVE_CONTROLS(){
         if (millis() - lastFreqPrint >= 1000) {
             float measuredHz = loopCount * 1000.0 / (millis() - lastFreqPrint);
 
-            Serial.print("Target: 10 Hz, Measured: ");
-            Serial.print(measuredHz, 2);
-            Serial.println(" Hz");
+            //Serial.print("Target: 10 Hz, Measured: ");
+            //Serial.print(measuredHz, 2);
+            //Serial.println(" Hz");
 
             loopCount = 0;
             lastFreqPrint = millis();
@@ -53,7 +58,7 @@ void Procedures::DRIVE_CONTROLS(){
         // If we're very late, resync nextUpdateMicros to 'now'
         if ((long)(now - nextUpdateMicros) > (long)interval) {
             nextUpdateMicros = now + interval;
-            Serial.println("Loop lagged! Resyncing schedule.");
+            //Serial.println("Loop lagged! Resyncing schedule.");
         }
 
     } else {
@@ -63,24 +68,25 @@ void Procedures::DRIVE_CONTROLS(){
 }
 
 bool Procedures::EJECTION(){
-    static bool primed = false;
     static bool aboveTargetH = false;
+    static uint32_t prevmillis = 0;
 
-    double height = sensors->MSSensor.Data.getMSData().getX();
+    double height = sensors->MSSensor.Data.getMSData().getX() - initial_height;
 
-    if (height > 100){
-        primed = true;
-    }
+    if (height > 800) aboveTargetH = true;
 
-    if (height > 450) aboveTargetH = true;
-
-    if (primed && aboveTargetH){
-        if (height <= 400){
+    if (aboveTargetH){
+        if (false){ // to be replaced with velocity calc
             digitalWrite(31, HIGH);
             delay(5000);
             digitalWrite(31, LOW);
             return true;
         }
+    }
+    uint32_t now = millis();
+    if (now - prevmillis >= 500){
+        double prevheight = height;
+        prevmillis = now;
     }
     return false;
 }

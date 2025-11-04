@@ -9,7 +9,6 @@
 #define MAIN_IMU_SCK 13
 #define MAIN_IMU_INT 9
 #define MAIN_IMU_RST 5
-#define MAIN_IMU_I2C_ADDR 0x4B // default 0x4B
 #define MAIN_IMU_PS1 4
 #define MAIN_IMU_PS0 3
 
