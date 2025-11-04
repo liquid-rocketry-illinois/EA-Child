@@ -5,11 +5,6 @@
 #include <Servo.h>
 
 #define MOTOR_CT 4
-//Placeholders
-#define MOTOR1_A (uint8_t*)0x00
-#define MOTOR2_A (uint8_t*)0x01
-#define MOTOR3_A (uint8_t*)0x02
-#define MOTOR4_A (uint8_t*)0x03
 
 class Motor{
     private:
@@ -21,7 +16,6 @@ class Motor{
     public:
 
     Motor(int pin);
-    ~Motor();
 
     bool init();
     Vector3D getState();

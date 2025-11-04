@@ -1,17 +1,17 @@
-// These are the four libraries for the four utilized sensors
-#include <MS5611.h>
-#include <SensirionI2cSht4x.h>
+#include "Controls/Procedures.h"
+#include "Controls/Tests.h"
 
-#include "Controls/Procedures.hpp"
-#include "Controls/Tests.hpp"
+Procedures EAChild;
 
 void setup() {
     // Function that contains the runnning code for setup
-    Procedures::___MAINSETUP();
+    EAChild.MAINSETUP();
 }
 
 void loop() {
     // Function that contains the running code for looping (either main procedure or tests)
-    Procedures::___MAIN();
+    if (EAChild.EJECTION() == false){
+        EAChild.DRIVE_CONTROLS();
+    }
     //Tests::Ejection_Test();
 }

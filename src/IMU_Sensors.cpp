@@ -1,6 +1,6 @@
-#include "IMU_Sensors.h"
+#include "Sensors/IMU_Sensors.h"
 #include "SDCard.h"
-#include "../Math/HelpersFunctions.h"
+#include "Math/HelpersFunctions.h"
 
 GNCData::GNCData(ICM42688* secIMU, BNO08x* mainIMU)
     : Secondary(secIMU), Main(mainIMU){
@@ -142,10 +142,10 @@ String IMUSensors::Update(){
             //Serial.println(MainIMU.getPitch() * 180.0 / PI);
             //Serial.println(MainIMU.getYaw() * 180.0 / PI);
             //Serial.println(MainIMU.getRoll() * 180.0 / PI);
-            Data.Quats->i = MainIMU.getQuatI();
-            Data.Quats->j = MainIMU.getQuatJ();
-            Data.Quats->k = MainIMU.getQuatK();
-            Data.Quats->r = MainIMU.getQuatReal();
+            Data.quats->i = MainIMU.getQuatI();
+            Data.quats->j = MainIMU.getQuatJ();
+            Data.quats->k = MainIMU.getQuatK();
+            Data.quats->r = MainIMU.getQuatReal();
 
             Data.pyyr->setX(MainIMU.getPitch() * 180.0 / PI);
             Data.pyyr->setY(MainIMU.getYaw() * 180.0 / PI);
@@ -224,6 +224,6 @@ String IMUSensors::Update(){
         Data.alpha->getX(), Data.alpha->getY(), Data.alpha->getZ(),
         afterBNO
     );
-    Serial.println(buffer);
+    //Serial.println(buffer);
     return String(buffer);
 }

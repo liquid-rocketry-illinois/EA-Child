@@ -1,4 +1,4 @@
-#include "ControlsSystem.h"
+#include "Controls/ControlsSystem.h"
 
 void CTRLS::Init(Sensors* sensors){
     this->Data = sensors;

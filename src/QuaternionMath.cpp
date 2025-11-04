@@ -1,4 +1,4 @@
-#include "QuaternionMath.h"
+#include "Math/QuaternionMath.h"
 
 void QuatMath::quaternionToEuler(float qr, float qi, float qj, float qk, Vector3D* pyr, bool degrees = false) {
 

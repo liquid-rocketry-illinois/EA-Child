@@ -17,6 +17,13 @@
 #define SEC_IMU_SDA 18
 #define SECONDARY_IMU_I2C_ADDR 0x68 // 104
 
+struct Quaternions{ // Quaternion data
+    float i;
+    float j;
+    float k;
+    float r;
+}; 
+
 class GNCData {
 private:
     double pitch;
@@ -43,18 +50,20 @@ private:
     BNO08x* Main;
 
 public:
-    Vector3D* pyyr = new Vector3D(pitch, yaw, roll);
-    Vector3D* omega = new Vector3D(omegaX, omegaY, omegaZ);
-    Vector3D* alpha = new Vector3D(alphaX, alphaY, alphaZ);
-    Vector3D* U   = new Vector3D(vX, vY, vZ); // Velocity
-    Vector3D* A   = new Vector3D(aX, aY, aZ); // Acceleration
-    Vector3D* Magnet = new Vector3D(mX, mY, mZ); // Magnetometer data
-    struct Quaternions{ // Quaternion data
-        float i;
-        float j;
-        float k;
-        float r;
-    } *Quats; 
+    Vector3D pyyr_o;
+    Vector3D omega_o;
+    Vector3D alpha_o;
+    Vector3D U_o; // Velocity
+    Vector3D A_o; // Acceleration
+    Vector3D Magnet_o; // Magnetometer data
+    Quaternions* quats;
+
+    Vector3D* pyyr = &pyyr_o;
+    Vector3D* omega = &omega_o;
+    Vector3D* alpha = &alpha_o;
+    Vector3D* U   = &U_o; // Velocity
+    Vector3D* A   = &A_o; // Acceleration
+    Vector3D* Magnet = &Magnet_o; // Magnetometer data
 
     GNCData(ICM42688* secIMU, BNO08x* mainIMU);
 
@@ -65,6 +74,7 @@ struct IMUSensors {
     BNO08x MainIMU;
     ICM42688 SecondaryIMU = ICM42688(Wire, SECONDARY_IMU_I2C_ADDR);
     GNCData Data = GNCData(&SecondaryIMU, &MainIMU);
+    Quaternions* Quats = Data.quats;
     sh2_SensorValue_t sensorValue;
     sh2_SensorId_t reportType = SH2_ARVR_STABILIZED_RV;
     long reportIntervalUs = 5000;
