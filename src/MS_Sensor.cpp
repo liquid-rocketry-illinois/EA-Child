@@ -2,6 +2,7 @@
 
 // Standard sea-level pressure in millibars
 static constexpr double P0 = 1013.25;
+#define MS_I2C_EN_PIN 29 // enable i2c pin for p0
 
 // --- SensorData::update() ---
 SensorReading SensorData::update() {
@@ -35,6 +36,10 @@ Vector3D SensorData::getMSData(){ // Vector3D(altitude,pressure,temperature)
 // --- MSSensors::init() ---
 void MSSensors::init() {
     // Initialize sensor hardware
+    pinMode(MS_I2C_EN_PIN, OUTPUT);
+
+    digitalWrite(MS_I2C_EN_PIN, HIGH); // HIGH in order to set as I2C communication
+
     MSstatus = MSSensor.begin();
     if (MSstatus) {
         Data.setBarometer(&MSSensor);
