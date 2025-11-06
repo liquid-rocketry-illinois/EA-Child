@@ -5,8 +5,9 @@
 #include "../SDCard.h"
 #include "ControlsSystem.h"
 #include <Arduino.h>
+#include "DEBUG_SWITCH.h"
 
-#define DATA_WRITE_FREQUENCY 50 // Hertz
+#define DATA_WRITE_FREQUENCY 40 // Hertz
 
 class Procedures{
     private:

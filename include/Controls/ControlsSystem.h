@@ -4,6 +4,7 @@
 #include <iostream>
 #include "../Sensors/Sensors.h"
 #include <Arduino.h>
+#include "DEBUG_SWITCH.h"
 
 using Eigen::MatrixXd;
 using Eigen::Matrix;

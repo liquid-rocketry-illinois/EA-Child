@@ -3,6 +3,7 @@
 #include "../Math/QuaternionMath.h"
 #include "../Math/Vector.h"
 #include <Servo.h>
+#include "DEBUG_SWITCH.h"
 
 #define MOTOR_CT 4
 
@@ -13,9 +14,8 @@
 
 class Motor{
     private:
-    Vector3D state;
-    Vector3D StateChange; // Preserve last movement for logging
-    Vector3D activeAcceleration;
+    int state;
+    int StateChange; // Preserve last movement for logging
     Servo device;
 
     public:
@@ -23,14 +23,27 @@ class Motor{
     Motor(int pin);
 
     bool init();
-    Vector3D getState();
     void tare();
-    void setState(Vector3D toState);
+    void setState(int toState, int lastState);
     String Update();
     bool IsActive();
 };
 
 struct Servos{
+    struct toState{
+        int A;
+        int B;
+        int C;
+        int D;
+    };
+
+    struct previousAngles{
+        int a;
+        int b;
+        int c;
+        int d;
+    };
+
     // Will change these based on actual positions. Color + highlight for labeling.
     Motor MotorA = Motor(MOTOR_PIN_1); // BROWN with black bottom
     Motor MotorB = Motor(MOTOR_PIN_2); // BROWN with black top
@@ -38,8 +51,14 @@ struct Servos{
     Motor MotorD = Motor(MOTOR_PIN_4); // GRAY with black top
 
     bool init();
-    void actuate(double angle, bool radians = false);
+    void actuate(toState r);
     bool testMotors();
 
-    static int lastFiveAngles[5];
+    previousAngles aa;
+    previousAngles bb;
+    previousAngles cc;
+    previousAngles dd;
+    previousAngles ee;
+
+    previousAngles lastFiveAngles[5] = {aa, bb, cc, dd, ee};
 }; 

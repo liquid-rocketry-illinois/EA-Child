@@ -1,6 +1,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include "Math/Vector3D.h"
+#include "DEBUG_SWITCH.h"
 
 // SD CARD STUFF
 const int chipSelect = BUILTIN_SDCARD;

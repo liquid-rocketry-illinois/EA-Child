@@ -4,6 +4,7 @@
 #include <Wire.h>
 #include "MS5611.h"
 #include "../Math/Vector3D.h"
+#include "DEBUG_SWITCH.h"
 
 struct SensorReading {
     double pressure;     // Pressure in mbar (or hPa)
@@ -15,6 +16,7 @@ class SensorData {
 private:
     MS5611* barometer = nullptr;
     Vector3D MSData;
+    double initial_height = 0;
 
 public:
     Vector3D getMSData();
@@ -24,8 +26,13 @@ public:
         barometer = b;
     }
 
+    inline void setInitHeight(double in_height) {
+        initial_height = in_height;
+    }
+
     // Returns struct with latest sensor data
     SensorReading update();
+    SensorReading update_tared(double init_height);
 };
 
 struct MSSensors {
@@ -40,5 +47,6 @@ struct MSSensors {
 
     // Update reading through SensorData wrapper
     String Update();
+    String Update_Tared(double init_height);
 };
 

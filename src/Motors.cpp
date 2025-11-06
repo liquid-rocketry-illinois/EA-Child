@@ -5,20 +5,25 @@ Motor::Motor(int pin){
 }
 
 void Motor::tare(){
-    state.setX(0);
-    state.setY(0);
-    state.setZ(0);
+    state = 0;
 }
 
 bool Motor::init(){
+    pinMode(MOTOR_PIN_1, OUTPUT);
+    pinMode(MOTOR_PIN_2, OUTPUT);
+    pinMode(MOTOR_PIN_3, OUTPUT);
+    pinMode(MOTOR_PIN_4, OUTPUT);
+
+    delay(50);
+
     tare();
     return true;
 }
 
 // State vector: Vector3D(ending position, <unused>>, <unused>)). This may change soon
-void Motor::setState(Vector3D toState){
-    StateChange = toState;
-    device.write((int)toState.getX());
+void Motor::setState(int toState, int lastState){
+    StateChange = toState - lastState;
+    device.write((int)StateChange);
 }
 
 bool Motor::IsActive(){
@@ -32,48 +37,41 @@ bool Servos::init(){
     MotorD.init();
 
     if(!MotorA.IsActive()){
+#ifdef MODE_TESTING
         Serial.println("Failed to init motor A");
+#endif
         return false;
     }
     if(!MotorB.IsActive()){
-        Serial.println("Failed to init motor A");
+#ifdef MODE_TESTING
+        Serial.println("Failed to init motor B");
+#endif
         return false;
     }
     if(!MotorC.IsActive()){
-        Serial.println("Failed to init motor A");
+#ifdef MODE_TESTING
+        Serial.println("Failed to init motor C");
+#endif
         return false;
     }
     if(!MotorD.IsActive()){
-        Serial.println("Failed to init motor A");
+#ifdef MODE_TESTING
+        Serial.println("Failed to init motor D");
+#endif
         return false;
     }
     return true;
 }
 
-// Set 'radians' to true if your input angle is in radians
-void Servos::actuate(double angle, bool radians = false){
-    int a;
-    if (radians){
-        a = int(angle * 180/PI);
-    }
-    else a = (int)angle;
-
-    MotorA.setState(Vector3D(a, 0, 0));
-    MotorB.setState(Vector3D(a, 0, 0));
-    MotorC.setState(Vector3D(a, 0, 0));
-    MotorD.setState(Vector3D(a, 0, 0));
+// toState = struct {A, B, C, D} for all four angles
+void Servos::actuate(toState r){
+    MotorA.setState(r.A, lastFiveAngles[3].a);
+    MotorB.setState(r.B, lastFiveAngles[3].b);
+    MotorC.setState(r.C, lastFiveAngles[3].c);
+    MotorD.setState(r.D, lastFiveAngles[3].d);
 
     for (int i = 4; i > 0; i--){
         lastFiveAngles[i-1] = lastFiveAngles[i];
     }
-    lastFiveAngles[4] = a;
-}
-
-bool Servos::testMotors(){
-    MotorA.setState(Vector3D(-20, 0, 0));
-    MotorB.setState(Vector3D(-20, 0, 0));
-    MotorC.setState(Vector3D(-20, 0, 0));
-    MotorD.setState(Vector3D(-20, 0, 0));
-
-    return true; // Was going to use but now its whatever
+    lastFiveAngles[4] = {r.A, r.B, r.C, r.D};
 }
