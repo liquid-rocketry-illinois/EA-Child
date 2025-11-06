@@ -20,10 +20,9 @@ bool Motor::init(){
     return true;
 }
 
-// State vector: Vector3D(ending position, <unused>>, <unused>)). This may change soon
-void Motor::setState(int toState, int lastState){
-    StateChange = toState - lastState;
-    device.write((int)StateChange);
+
+void Motor::setState(int toState){
+    device.write(toState);
 }
 
 bool Motor::IsActive(){
@@ -65,10 +64,10 @@ bool Servos::init(){
 
 // toState = struct {A, B, C, D} for all four angles
 void Servos::actuate(toState r){
-    MotorA.setState(r.A, lastFiveAngles[3].a);
-    MotorB.setState(r.B, lastFiveAngles[3].b);
-    MotorC.setState(r.C, lastFiveAngles[3].c);
-    MotorD.setState(r.D, lastFiveAngles[3].d);
+    MotorA.setState(r.A);
+    MotorB.setState(r.B);
+    MotorC.setState(r.C);
+    MotorD.setState(r.D);
 
     for (int i = 4; i > 0; i--){
         lastFiveAngles[i-1] = lastFiveAngles[i];

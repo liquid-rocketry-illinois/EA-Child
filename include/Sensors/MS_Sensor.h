@@ -46,7 +46,7 @@ struct MSSensors {
     void init();
 
     // Update reading through SensorData wrapper
-    String Update();
-    String Update_Tared(double init_height);
+    const char*  Update();
+    const char*  Update_Tared(double init_height);
 };
 

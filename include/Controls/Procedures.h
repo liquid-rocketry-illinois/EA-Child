@@ -27,4 +27,5 @@ class Procedures{
     void MAINSETUP();
     void DRIVE_CONTROLS();
     bool EJECTION();
+    Servos* getServoAddr();
 };

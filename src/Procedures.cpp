@@ -27,7 +27,7 @@ void Procedures::MAINSETUP(){
     motors->init();
 
     const uint32_t init_millis = millis();
-    while(millis() - init_millis < 180000){ // Delay for calibration : 3min
+    while(millis() - init_millis < 1000){ // Delay for calibration : 20s currently
         sensors->Update();
 #ifdef MODE_TESTING
         Serial.println("Calibrating...");
@@ -136,4 +136,8 @@ bool Procedures::EJECTION(){
         return true;
     }
     return false;
+}
+
+Servos* Procedures::getServoAddr(){
+    return this->motors;
 }

@@ -18,7 +18,7 @@ void setup() {
 
 void loop() {
     // Function that contains the running code for looping (either main procedure or tests)
-    Tests::Motor_Test();
+    Tests::Motor_Test(EAChild.getServoAddr());
 /*
     if (EAChild.EJECTION() == false){
         EAChild.DRIVE_CONTROLS();

@@ -21,26 +21,7 @@ void Tests::Ejection_Test(uint8_t eject_pin = 31){
     while(1){;}
 }
 
-void Tests::Motor_Test(){
-    Servos test;
-    test.init();
-    delay(50);
-
-    test.actuate({8, 0, 0, 0});
+void Tests::Motor_Test(Servos* test){
+    test->actuate({108, 118, 100, 117});
     delay(400);
-    test.actuate({0, 8, 0, 0});
-    delay(400);
-    test.actuate({0, 0, 8, 0});
-    delay(400);
-    test.actuate({0, 0, 0, 8});
-    delay(1000);
-
-    test.actuate({-8, 0, 0, 0});
-    delay(400);
-    test.actuate({0, -8, 0, 0});
-    delay(400);
-    test.actuate({0, 0, -8, 0});
-    delay(400);
-    test.actuate({0, 0, 0, -8});
-    delay(3000);
 }

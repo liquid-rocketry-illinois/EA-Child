@@ -8,6 +8,6 @@ struct Sensors{
     MSSensors MSSensor;
 
     bool InitSensors();
-    String Update();
+    const char* Update();
     String Update_Tared(double init_height);
 };

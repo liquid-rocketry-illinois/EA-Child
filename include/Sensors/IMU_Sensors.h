@@ -93,6 +93,6 @@ struct IMUSensors {
     void setReports();
     void Init();
     Vector3D* directPYR(Vector3D* accel, Vector3D* gyro, Vector3D* magn, double dt);
-    String Update();
-    String Update_Tared();
+    const char*  Update();
+    const char*  Update_Tared();
 };

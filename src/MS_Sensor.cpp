@@ -70,13 +70,13 @@ void MSSensors::init() {
 }
 
 // --- MSSensors::update() ---
-String MSSensors::Update() {
+const char*  MSSensors::Update() {
     if (!MSstatus) {
-        return String(); // Return nothing if sensor not initialized
+        return 0; // Return nothing if sensor not initialized
     }
     SensorReading data = Data.update();
 
-    char buffer[50];
+    static char buffer[50];
     snprintf(buffer, sizeof(buffer),
         "||%.3f,%.3f,%.3f||",
         data.altitude, data.pressure, data.temperature
@@ -84,17 +84,17 @@ String MSSensors::Update() {
 #ifdef MODE_TESTING
     Serial.println(buffer);
 #endif
-    return (String)buffer;
+    return buffer;
 }
 
 
-String MSSensors::Update_Tared(double init_height) {
+const char* MSSensors::Update_Tared(double init_height) {
     if (!MSstatus) {
-        return String(); // Return nothing if sensor not initialized
+        return 0; // Return nothing if sensor not initialized
     }
     SensorReading data = Data.update_tared(init_height);
 
-    char buffer[50];
+    static char buffer[50];
     snprintf(buffer, sizeof(buffer),
         "||%.3f,%.3f,%.3f||",
         data.altitude, data.pressure, data.temperature
@@ -102,5 +102,5 @@ String MSSensors::Update_Tared(double init_height) {
 #ifdef MODE_TESTING
     Serial.println(buffer);
 #endif
-    return (String)buffer;
+    return buffer;
 }

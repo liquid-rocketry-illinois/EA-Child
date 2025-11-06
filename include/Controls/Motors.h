@@ -24,7 +24,7 @@ class Motor{
 
     bool init();
     void tare();
-    void setState(int toState, int lastState);
+    void setState(int toState);
     String Update();
     bool IsActive();
 };
