@@ -37,6 +37,8 @@ struct Servos{
         int D;
     };
 
+    const toState origin = {108, 118, 100, 117};
+    
     struct previousAngles{
         int a;
         int b;

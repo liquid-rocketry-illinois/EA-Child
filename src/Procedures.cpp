@@ -1,6 +1,6 @@
 #include "Controls/Procedures.h"
 
-void Procedures::MAINSETUP(){
+void Procedures::MAINSETUP(bool quicksetup = false){
     // All pins default to an INPUT designation
     pinMode(31, OUTPUT); // PYRO
     digitalWrite(31, LOW);
@@ -26,8 +26,10 @@ void Procedures::MAINSETUP(){
     Controller->Init(sensors);
     motors->init();
 
-    const uint32_t init_millis = millis();
-    while(millis() - init_millis < 1000){ // Delay for calibration : 20s currently
+    const uint32_t init_millis = millis(); 
+    int calibration_delay = 20000;
+    if(quicksetup) calibration_delay = 100;
+    while(millis() - init_millis < calibration_delay){ // Delay for calibration : 20s currently
         sensors->Update();
 #ifdef MODE_TESTING
         Serial.println("Calibrating...");

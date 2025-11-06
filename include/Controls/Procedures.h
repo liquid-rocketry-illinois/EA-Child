@@ -24,7 +24,7 @@ class Procedures{
     double initial_height;
 
     public:
-    void MAINSETUP();
+    void MAINSETUP(bool quicksetup = false);
     void DRIVE_CONTROLS();
     bool EJECTION();
     Servos* getServoAddr();

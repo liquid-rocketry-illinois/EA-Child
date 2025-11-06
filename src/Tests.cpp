@@ -22,6 +22,8 @@ void Tests::Ejection_Test(uint8_t eject_pin = 31){
 }
 
 void Tests::Motor_Test(Servos* test){
-    test->actuate({108, 118, 100, 117});
-    delay(400);
+    test->actuate({10,10,10,10});
+    delay(1000);
+    test->actuate({-10,-10,-10,-10});
+    delay(1000);
 }
