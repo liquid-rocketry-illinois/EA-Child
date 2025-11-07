@@ -63,7 +63,7 @@ void Procedures::MAINSETUP(bool quicksetup = false){
     );
 
     DataCard->SDWrite(" Initial IMU data: ");
-    DataCard->SDWrite((String)buffer);
+    DataCard->SDWrite(String(buffer));
 
 #ifdef MODE_TESTING
     Serial.print("\nInitial IMU data: ");

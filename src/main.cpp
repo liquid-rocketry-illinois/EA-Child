@@ -24,5 +24,5 @@ void loop() {
         EAChild.DRIVE_CONTROLS();
     }
 */
-    Tests::Ejection_Test();
+    Tests::Ejection_Test(EAChild.getServoAddr());
 }
