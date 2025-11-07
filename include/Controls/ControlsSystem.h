@@ -5,15 +5,17 @@
 #include "../Sensors/Sensors.h"
 #include <Arduino.h>
 #include "DEBUG_SWITCH.h"
+#include "Controls/Motors.h"
 
 using Eigen::MatrixXd;
 using Eigen::Matrix;
 
 struct CTRLS {
     Sensors* Data;
+    
 
     void Init(Sensors* sensor);
-    String Update();
+    const char* Update(Servos* servos);
 };
 
 class Controls{

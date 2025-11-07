@@ -13,16 +13,16 @@ Procedures EAChild;
 
 void setup() {
     // Function that contains the runnning code for setup
-    EAChild.MAINSETUP(true);
+    EAChild.MAINSETUP();
 }
 
 void loop() {
     // Function that contains the running code for looping (either main procedure or tests)
     //Tests::Motor_Test(EAChild.getServoAddr());
-/*
+
     if (EAChild.EJECTION() == false){
         EAChild.DRIVE_CONTROLS();
     }
-*/
-    Tests::Ejection_Test(EAChild.getServoAddr());
+
+    //Tests::Ejection_Test(EAChild.getServoAddr());
 }

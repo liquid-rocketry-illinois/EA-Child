@@ -83,7 +83,7 @@ void Procedures::DRIVE_CONTROLS(){
         
         // ---- Sensor + Logging ----
         DataCard->SDWrite(sensors->Update_Tared(initial_height));
-        DataCard->SDWrite(Controller->Update());
+        DataCard->SDWrite(Controller->Update(motors));
 
         // ---- Frequency Monitor ----
         static unsigned long lastFreqPrint = millis();

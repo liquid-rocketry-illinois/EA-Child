@@ -53,7 +53,7 @@ struct Servos{
     Motor MotorD = Motor(MOTOR_PIN_4); // GRAY with black top
 
     bool init();
-    void actuate(toState r);
+    void setStateTo(toState r);
     bool testMotors();
 
     previousAngles aa;

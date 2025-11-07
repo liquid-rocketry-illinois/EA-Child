@@ -63,7 +63,7 @@ bool Servos::init(){
 }
 
 // toState = struct {A, B, C, D} for all four angles
-void Servos::actuate(toState r){
+void Servos::setStateTo(toState r){
     MotorA.setState(r.A + origin.A);
     MotorB.setState(r.B + origin.B);
     MotorC.setState(r.C + origin.C);
@@ -74,3 +74,5 @@ void Servos::actuate(toState r){
     }
     lastFiveAngles[4] = {r.A, r.B, r.C, r.D};
 }
+
+
