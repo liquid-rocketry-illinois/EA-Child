@@ -10,9 +10,6 @@ const char* CTRLS::Update(Servos* servos){
     // CONTROLLER CODE
 
     servos->setStateTo({0, 0, 0, 0}); // This zeros the servos
-    servos->setStateTo({10, 10, 10, 10}); // This rotates the servos to 10 degrees
-    servos->setStateTo({0, 5, 10, -10}); // You can also rotate each individual servo however much you need (up to 45 in either direction)
-    servos->setStateTo({0, 0, 10, 10});
 
     // END CONTROLLER CODE
 

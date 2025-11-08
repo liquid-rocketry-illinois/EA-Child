@@ -14,13 +14,13 @@ void Tests::Ejection_Test(Servos* test, uint8_t eject_pin = 31){
 #ifdef MODE_TESTING
     Serial.println("EJECT");
 #endif
-    test->actuate({10,10,10,10});
+    test->setStateTo({10,10,10,10});
     delay(100);
-    test->actuate({-10,-10,-10,-10});
+    test->setStateTo({-10,-10,-10,-10});
     delay(100);
-    test->actuate({15,15,15,15});
+    test->setStateTo({15,15,15,15});
     delay(100);
-    test->actuate({0,0,0,0});
+    test->setStateTo({0,0,0,0});
     delay(500);
     digitalWrite(eject_pin, HIGH);
     delay(5000);
@@ -32,8 +32,8 @@ void Tests::Ejection_Test(Servos* test, uint8_t eject_pin = 31){
 }
 
 void Tests::Motor_Test(Servos* test){
-    test->actuate({10,10,10,10});
+    test->setStateTo({10,10,10,10});
     delay(1000);
-    test->actuate({-10,-10,-10,-10});
+    test->setStateTo({-10,-10,-10,-10});
     delay(1000);
 }

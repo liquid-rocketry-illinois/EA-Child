@@ -9,5 +9,5 @@ struct Sensors{
 
     bool InitSensors();
     const char* Update();
-    String Update_Tared(double init_height);
+    const char* Update_Tared(double init_height);
 };

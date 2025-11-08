@@ -19,9 +19,18 @@ void setup() {
 void loop() {
     // Function that contains the running code for looping (either main procedure or tests)
     //Tests::Motor_Test(EAChild.getServoAddr());
-
+    static bool ejected = false;
+    
     if (EAChild.EJECTION() == false){
-        EAChild.DRIVE_CONTROLS();
+        EAChild.DRIVE_CONTROLS(EAChild.launched);
+    }
+    else if (EAChild.EJECTION() == true){
+        ejected = true;
+    }
+
+    if (ejected){
+        static uint32_t start = millis();
+        if(millis() - start > 120000) EAChild.stopData();
     }
 
     //Tests::Ejection_Test(EAChild.getServoAddr());

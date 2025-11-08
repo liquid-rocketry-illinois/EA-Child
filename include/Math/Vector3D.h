@@ -26,7 +26,7 @@ public:
 
     // Magnitude and normalization
     double magnitude() const {
-        return std::sqrt(x*x + y*y + z*z);
+        return sqrt(x*x + y*y + z*z);
     }
 
     Vector3D normalized() const {

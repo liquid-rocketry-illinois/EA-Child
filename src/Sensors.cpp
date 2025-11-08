@@ -18,9 +18,13 @@ const char* Sensors::Update() {
     return buffer;
 }
 
-String Sensors::Update_Tared(double init_height){
-    String result = IMUs.Update_Tared();
-    Serial.println("successfully returned IMUdata");
-    String MSresult = MSSensor.Update_Tared(init_height);
-    return result + MSresult;
+const char* Sensors::Update_Tared(double init_height){
+    static char buffer[700]; // adjust size as needed
+
+    const char* imu = IMUs.Update_Tared();       // must return const char*
+    const char* ms  = MSSensor.Update_Tared(init_height);   // must return const char*
+
+    snprintf(buffer, sizeof(buffer), "%s%s", imu, ms);
+
+    return buffer;
 }
