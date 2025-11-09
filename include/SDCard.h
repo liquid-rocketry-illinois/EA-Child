@@ -22,7 +22,7 @@ class SDCard{
             return false;
         }
         else //Serial.println("card initialized.");
-        dataFile = SD.open("datalogREALTEST.txt", FILE_WRITE);
+        dataFile = SD.open("FLIGHT_LOG.txt", FILE_WRITE);
         return true;
     }
 

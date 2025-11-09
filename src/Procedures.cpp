@@ -27,9 +27,9 @@ void Procedures::MAINSETUP(bool quicksetup = false){
     motors->init();
 
     const uint32_t init_millis = millis(); 
-    int calibration_delay = 20000;
+    int calibration_delay = 180000;
     if(quicksetup) calibration_delay = 100;
-    while(millis() - init_millis < calibration_delay){ // Delay for calibration : 20s currently
+    while(millis() - init_millis < calibration_delay){ // Delay for calibration : 180s currently
         sensors->Update();
 #ifdef MODE_TESTING
         Serial.println("Calibrating...");
@@ -49,7 +49,12 @@ void Procedures::MAINSETUP(bool quicksetup = false){
     DataCard->SDWrite(" Initial Height: ");
     DataCard->SDWrite((String)initial_height);
 
-    
+    motors->setStateTo({30,30,30,30});
+    delay(100);
+    motors->setStateTo({-30,-30,-30,-30});
+    delay(100);
+    motors->setStateTo({0,0,0,0});
+    motors->setStateTo({0,0,0,0});
 
     char buffer[540];
     snprintf(buffer, sizeof(buffer),
@@ -100,7 +105,7 @@ bool Procedures::updateMotorSequence() {
 // Cross examined 11/08/2025. No bugs found
 bool Procedures::EJECTION() {
     // --- configurable thresholds/timings (tune as needed) ---
-    const double START_HEIGHT_THRESHOLD = 10.0;    // start arming (units: meters)
+    const double START_HEIGHT_THRESHOLD = 15.0;    // start arming (units: meters)
     const double START_VEL_THRESHOLD    = 20.0;    // start arming (units: m/s)
     const double START_ACC_THRESHOLD    = 50.0;    // start arming (units: m/s^2)
 

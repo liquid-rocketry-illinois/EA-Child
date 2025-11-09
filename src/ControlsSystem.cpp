@@ -9,7 +9,7 @@ const char* CTRLS::Update(Servos* servos){
 
     // CONTROLLER CODE
 
-    servos->setStateTo({0, 0, 0, 0}); // This zeros the servos
+    //servos->setStateTo({0, 0, 0, 0}); // This zeros the servos
 
     // END CONTROLLER CODE
 
